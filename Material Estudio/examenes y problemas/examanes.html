@@ -1,0 +1,2124 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Simulador de Exámenes - Canal de Isabel II</title>
+<style>
+    body { 
+        font-family: Arial, sans-serif; 
+        margin: 20px auto; 
+        max-width: 800px; 
+        padding: 0 15px;
+        line-height: 1.6;
+    }
+    h1 { text-align: center; }
+    .menu {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 30px;
+        justify-content: center;
+    }
+    button {
+        padding: 10px 20px;
+        font-size: 16px;
+        cursor: pointer;
+        border: 1px solid #0056b3;
+        background-color: #007bff;
+        color: white;
+        border-radius: 5px;
+    }
+    button:hover { background-color: #0056b3; }
+    .question-block {
+        margin-bottom: 25px;
+        padding-bottom: 15px;
+        border-bottom: 1px solid #ddd;
+    }
+    .question-text {
+        font-weight: bold;
+        margin-bottom: 10px;
+    }
+    .option {
+        margin-bottom: 8px;
+        display: block;
+        cursor: pointer;
+    }
+    .feedback {
+        margin-top: 10px;
+        padding: 10px;
+        border-radius: 4px;
+        display: none;
+        font-weight: bold;
+    }
+    .correct {
+        color: #155724;
+        background-color: #d4edda;
+        border: 1px solid #c3e6cb;
+        display: block;
+    }
+    .incorrect {
+        color: #721c24;
+        background-color: #f8d7da;
+        border: 1px solid #f5c6cb;
+        display: block;
+    }
+    .highlight-correct {
+        color: #155724;
+        font-weight: bold;
+        background-color: #d4edda;
+        padding: 2px 5px;
+        border-radius: 3px;
+    }
+</style>
+</head>
+<body>
+
+<h1>Simulador de Exámenes</h1>
+
+<div class="menu">
+    <button onclick="loadExam('exam1')">Examen Administrativo</button>
+    <button onclick="loadExam('exam2')">Examen Teórico-Práctico</button>
+</div>
+
+<h2 id="exam-title" style="text-align: center; color: #333;">Selecciona un examen para empezar</h2>
+<div id="quiz-container"></div>
+
+<script>
+const data = {
+    exam1: {
+        title: "Examen Administrativo (G0066-68)",
+        questions: [
+            {
+                text: "El anticipo de consumo a incluir en los costes de la contratación de un nuevo suministro de agua, se contempla en:",
+                options: [
+                    "a) En el Decreto 137/1985, de 20 de diciembre.",
+                    "b) En el Decreto 3068/1975, de 31 de octubre.",
+                    "c) En el Decreto 2922/1975, de 31 de octubre."
+                ],
+                correct: 1 
+            },
+            {
+                text: "A los efectos de la tributación del IRPF, ¿cuándo se considera que se tiene la residencia habitual en territorio español y por tanto se es contribuyente?",
+                options: [
+                    "a) Cuando permanezca más de 150 días durante el año natural, en territorio español",
+                    "b) Cuando permanezca más de 183 días durante el año natural, en territorio español",
+                    "c) Al ser propietario de un inmueble en territorio español"
+                ],
+                correct: 1
+            },
+            {
+                text: "En la redacción de documentos profesionales escritos, indica qué expresión es correcta desde los puntos de vista gramatical y ortográfico:",
+                options: [
+                    "a) El ordenador está detrás suyo.",
+                    "b) El otro día comentastes algo interesante.",
+                    "c) Me alegra que haya contratado con nosotros."
+                ],
+                correct: 2
+            },
+            {
+                text: "Según el Decreto 3068/1975 de 31 de octubre en su artículo 6, ¿qué cantidad debe satisfacer el cliente cuando realice un nuevo contrato para una finca o local ya abastecido?",
+                options: [
+                    "a) Anticipo de consumo únicamente.",
+                    "b) Cuota de red únicamente.",
+                    "c) Cuota de red y anticipo de consumo."
+                ],
+                correct: 0
+            },
+            {
+                text: "Una empresa necesita 500 unidades diarias de materia prima para su proceso de fabricación. Se sabe que los proveedores tienen 5 días para servir los pedidos, aunque puede haber retrasos en la entrega que alarguen el plazo hasta los 9 días. ¿Cuál es el punto de pedido para evitar roturas de stock?",
+                options: [
+                    "a) 500 unidades",
+                    "b) 2500 unidades",
+                    "c) 4500 unidades"
+                ],
+                correct: 2
+            },{
+                text: "El plan de igualdad en la empresa es obligatorio, siempre que la plantilla ascienda a más de:",
+                options: [
+                    "a) 50 personas",
+                    "b) 100 personas",
+                    "c) 500 personas"
+                ],
+                correct: 1
+            },
+            {
+                text: "¿Cuántos tanques de tormenta y laminadores hay en Canal de Isabel II?",
+                options: [
+                    "a) Entre 50-70 instalaciones",
+                    "b) Entre 25-35 instalaciones",
+                    "c) Entre 80-90 instalaciones"
+                ],
+                correct: 0
+            },
+            {
+                text: "Los contribuyentes del Impuesto sobre Sociedades están obligados a presentar una declaración por este impuesto:",
+                options: [
+                    "a) Antes del día 20 del mes siguiente a la finalización de cada trimestre",
+                    "b) En el plazo de los 25 días naturales siguientes a los 6 meses posteriores a la conclusión del periodo impositivo",
+                    "c) En el plazo de 1 mes tras la Formulación de las Cuentas Anuales"
+                ],
+                correct: 1
+            },
+            {
+                text: "¿Cuál es la definición de \"La gestión de la atención al cliente\"?",
+                options: [
+                    "a) Es el conjunto de actividades realizadas por la empresa con orientación al mercado, es decir, enfocadas a identificar las necesidades de los clientes, satisfaciendo estas y así cumplir con sus expectativas con el producto o servicio ofertado.",
+                    "b) Es el conjunto de análisis de mercado realizados por la empresa, es decir, enfocados a identificar las necesidades del mercado, y de esa manera satisfacer las de sus clientes",
+                    "c) Es el conjunto de acciones realizadas por la empresa para la fidelización de sus clientes y estabilizar de esa manera su clientela."
+                ],
+                correct: 0
+            },
+            {
+                text: "Una empresa dispone, según su balance a 31/12 de un Activo No Corriente por 81.000 €, un Activo Corriente por 136.000 € y un Pasivo Corriente por 59.200 €. ¿Cuál es su Fondo de Maniobra?",
+                options: [
+                    "a) 21.800 euros",
+                    "b) 76.800 euros",
+                    "c) 157.800 euros"
+                ],
+                correct: 1
+            },
+            {
+                text: "De acuerdo a lo establecido en los artículos 94º y 95º del Reglamento para el servicio y distribución de las aguas del Canal de Isabel II (Decreto 2922/1975, de 31 de octubre), se consideran infracciones graves:",
+                options: [
+                    "a) Modificar o ampliar los usos del agua especificados en el contrato de suministro.",
+                    "b) Introducir alteración en los precintos colocados por Canal de Isabel II.",
+                    "c) Obstaculizar la labor de los agentes de corte de Canal de Isabel II en el cumplimiento de sus obligaciones."
+                ],
+                correct: 0
+            },
+            {
+                text: "¿Cuál es la definición correcta de consumidor o usuario según la Ley General para la Defensa de los Consumidores y Usuarios (LGDCU)?",
+                options: [
+                    "a) La persona, ya sea física o jurídica, que adquiere productos o servicios y actúa con un propósito ajeno al ámbito comercial o empresarial",
+                    "b) La persona, ya sea física o jurídica, que adquiere productos o servicios y actúa con un propósito comercial o empresarial",
+                    "c) Ninguna de las otras opciones es correcta"
+                ],
+                correct: 0
+            },
+            {
+                text: "De acuerdo a lo establecido en el artículo 64º del Reglamento para el servicio y distribución de las aguas del Canal de Isabel II (Decreto 2922/1975, de 31 de octubre), el plazo establecido para la condena de la acometida y resolución del contrato tras la suspensión inicial del suministro de agua por falta de pago es de:",
+                options: [
+                    "a) 2 meses.",
+                    "b) 3 meses.",
+                    "c) 1 mes."
+                ],
+                correct: 1
+            },
+            {
+                text: "¿Cuántas EVA (Estación de Vigilancia Automática) en TOTAL tiene Canal de Isabel II instaladas en salidas de ETAP, grandes depósitos y nudos más importantes del abastecimiento, así como para analizar el agua regenerada?",
+                options: [
+                    "a) 55",
+                    "b) 30",
+                    "c) 45"
+                ],
+                correct: 0
+            },
+            {
+                text: "La presa del Embalse del Atazar, cuenta con un conjunto de galerías con una extensión total de:",
+                options: [
+                    "a) 6 km de largo",
+                    "b) 8.000 m de largo",
+                    "c) 2.500 m de largo"
+                ],
+                correct: 1
+            },
+            {
+                text: "¿Qué son los Códec?",
+                options: [
+                    "a) Son unos programas que comprimen y descomprimen archivos de audio, vídeo, texto y hojas de cálculo que ahorran tiempo y espacio, aunque se producen ciertas pérdidas de información.",
+                    "b) Son unas pequeñas macros predeterminadas previamente por el gestor que comprimen, descomprimen y gestionan archivos de audio y vídeo para ahorrar tiempo y espacio, aunque se producen ciertas pérdidas de información.",
+                    "c) Son unos pequeños programas que comprimen y descomprimen archivos de audio y vídeo y que ahorran tiempo y espacio, aunque se producen ciertas pérdidas de información."
+                ],
+                correct: 2
+            },
+            {
+                text: "En el Impuesto sobre Sociedades, para determinar la Base Imponible, partiendo del Resultado Contable...",
+                options: [
+                    "a) Hay que sumar y/o restar los ajustes de carácter fiscal y restar la compensación de bases imponibles negativas de ejercicios anteriores",
+                    "b) La Base Imponible y el Resultado Contable siempre coinciden",
+                    "c) Hay que restar las retenciones e ingresos a cuenta y los pagos fraccionados"
+                ],
+                correct: 0
+            },
+            {
+                text: "De acuerdo a lo establecido en el artículo 5 del Decreto 3068/1975, de 31 de octubre, para regular las relaciones económicas abonado-Canal de Isabel II, la devolución del anticipo de consumo se realizará:",
+                options: [
+                    "a) A la finalización del contrato de suministro, siempre que no exista deuda en el mismo.",
+                    "b) A la finalización del contrato de suministro, incluso en el caso de que existiera deuda en el mismo.",
+                    "c) No se realiza la devolución en ningún caso."
+                ],
+                correct: 0
+            },
+            {
+                text: "De acuerdo a lo establecido en el artículo 42 del Reglamento para el servicio y distribución de las aguas del Canal de Isabel II (Decreto 2922/1975, de 31 de octubre), los contadores que se instalen por parte de Canal serán propiedad de:",
+                options: [
+                    "a) Canal.",
+                    "b) Abonado.",
+                    "c) Ayuntamiento."
+                ],
+                correct: 0
+            },
+            {
+                text: "Según el Decreto 2922/1975 de 31 de octubre en su artículo 13, el segundo ramal de la acometida de agua está comprendido:",
+                options: [
+                    "a) por la tubería entre la primera llave de paso en la acera de la vía pública y la segunda llave de paso situada en el interior de la finca o local abastecido e inmediatamente anterior al aparato de medida",
+                    "b) por la tubería entre la primera llave de paso en la acera de la vía pública y la segunda llave de paso situada en el interior de la finca o local abastecido e inmediatamente posterior al aparato de medida",
+                    "c) ninguna de las otras opciones es correcta"
+                ],
+                correct: 0
+            },
+            {
+                text: "¿Qué periodo de prueba debe pactarse, como máximo, para un contrato temporal de 6 meses, salvo que el convenio establezca otra cosa?",
+                options: [
+                    "a) 1 mes",
+                    "b) 15 días",
+                    "c) 3 meses"
+                ],
+                correct: 0
+            },
+            {
+                text: "Para percibir la prestación por desempleo, es necesaria una cotización mínima:",
+                options: [
+                    "a) de 100 días",
+                    "b) de 360 días",
+                    "c) No se exige periodo mínimo de cotización"
+                ],
+                correct: 1
+            },
+            {
+                text: "Una empresa tenía al inicio del ejercicio mercaderías valoradas en 1.200 €. En el inventario de 31 de diciembre comprueba que tiene mercaderías por valor de 900 €. ¿Qué asiento contable debe realizar?",
+                options: [
+                    "a) Al Debe la cuenta (610) Variación de existencias, al Haber la cuenta (300) Mercaderías. Por 300 euros",
+                    "b) Al Haber la cuenta (610) Variación de existencias, al Debe la cuenta (300) Mercaderías. Por 300 euros",
+                    "c) Al Debe la cuenta (610) Variación de existencias, al Haber la cuenta (300) Mercaderías. Por 900 euros"
+                ],
+                correct: 0
+            },
+            {
+                text: "El documento que detalla los ingresos y los gastos del ejercicio es:",
+                options: [
+                    "a) El Balance",
+                    "b) La cuenta de Pérdidas y Ganancias",
+                    "c) El Estado de Flujos de Efectivo"
+                ],
+                correct: 1
+            },
+            {
+                text: "Cuando un producto es comercializado por el mayor número posible de minoristas, hablamos de:",
+                options: [
+                    "a) Distribución exclusiva",
+                    "b) Distribución intensiva",
+                    "c) Distribución selectiva"
+                ],
+                correct: 1
+            },{
+                text: "Las empresas tienen la obligación de formar a su plantilla durante al menos:",
+                options: [
+                    "a) 10 horas anuales",
+                    "b) 20 horas anuales",
+                    "c) 40 horas anuales"
+                ],
+                correct: 1
+            },
+            {
+                text: "Según el II Convenio Colectivo de Canal de Isabel II, S.A., las tareas del grupo profesional Administrativo y nivel A consisten en:",
+                options: [
+                    "a) Ejecución de procesos y operaciones de carácter administrativo que, aún en el caso de que se realicen bajo instrucciones específicas, requieran cierta iniciativa y adecuados conocimientos profesionales y aptitudes prácticas y que pueden conllevar un alto contenido en interrelación humana",
+                    "b) Operaciones realizadas siguiendo instrucciones específicas que normalmente exigen conocimientos profesionales y aptitudes prácticas y cuya responsabilidad está limitada por una supervisión",
+                    "c) Operaciones realizadas siguiendo instrucciones específicas, con alto grado de supervisión, que normalmente exigen conocimientos profesionales y aptitudes prácticas y cuya responsabilidad está limitada por una supervisión"
+                ],
+                correct: 0
+            },
+            {
+                text: "La cadena logística:",
+                options: [
+                    "a) Pretende aplicar los recursos humanos y materiales para lograr el funcionamiento de los almacenes",
+                    "b) Está formada por las funciones de almacenaje, distribución y transporte",
+                    "c) Incluye, dentro de sus funciones, las de aprovisionamiento y gestión de proveedores"
+                ],
+                correct: 1
+            },
+            {
+                text: "En la movilidad funcional descendente o trabajos de inferior categoría, en cuanto al salario:",
+                options: [
+                    "a) Se mantiene el salario de origen",
+                    "b) El salario será el de la nueva categoría",
+                    "c) El salario de origen se mantiene durante el primer mes"
+                ],
+                correct: 0
+            },
+            {
+                text: "¿Cuál es el plazo de prescripción de las sanciones a las empresas en materia de Seguridad Social?",
+                options: [
+                    "a) 4 años",
+                    "b) 10 años",
+                    "c) No prescriben"
+                ],
+                correct: 0
+            },
+            {
+                text: "Según el Decreto 2922/1975 de 31 de octubre en su artículo 70, ¿de cuánto tiempo dispone el cliente para obtener del Canal cualquier información relacionada con lecturas, facturaciones, comprobaciones de contador, cobros, tarifas aplicadas y, en general, sobre toda cuestión relacionada con el suministro de su acometida?",
+                options: [
+                    "a) 2 años",
+                    "b) 5 años",
+                    "c) 1 año"
+                ],
+                correct: 0
+            },
+            {
+                text: "En una comunicación escrita profesional con un cliente, para el saludo correcto realizado en el cuerpo de una carta comercial, después de \"Estimada Sra. Dña. Teresa García\" se ha de escribir:",
+                options: [
+                    "a) Dos puntos (Estimada Sra. Dña. Teresa García:)",
+                    "b) Un punto (Estimada Sra. Dña. Teresa García.)",
+                    "c) Una coma (Estimada Sra. Dña. Teresa García,)"
+                ],
+                correct: 0
+            },
+            {
+                text: "En cuanto al permiso retribuido en el caso de fallecimiento de familiares hasta el segundo grado de consanguinidad o afinidad (cuando por tal motivo el trabajador NO necesite desplazarse fuera de la provincia de su residencia), el permiso será de:",
+                options: [
+                    "a) Dos días",
+                    "b) Cuatro días",
+                    "c) Cinco días"
+                ],
+                correct: 0
+            },
+            {
+                text: "Una empresa que comercializa zapatillas deportivas, presenta los siguientes datos de uno de sus modelos: Tiene un stock disponible en almacén de 20 unidades. Ha realizado un pedido de 110 unidades, de las que ha recibido 50 que aún no están disponibles. El resto se espera en los próximos días. Está pendiente de servir a sus clientes 38 unidades. Calcular el stock NETO.",
+                options: [
+                    "a) 20 unidades",
+                    "b) 80 unidades",
+                    "c) -18 unidades"
+                ],
+                correct: 2
+            },
+            {
+                text: "Si estoy trabajando en una hoja de cálculo Excel, señala la afirmación correcta respecto al pegado especial y el cuadro de diálogo Pegado especial:",
+                options: [
+                    "a) La opción Valores copia las fórmulas.",
+                    "b) La opción Formato copia los valores.",
+                    "c) La opción Fórmulas no copia los formatos."
+                ],
+                correct: 2
+            },
+            {
+                text: "Según el Decreto 2922/1975 de 31 de octubre en su artículo 74:",
+                options: [
+                    "a) El Canal declina la responsabilidad sobre cualquier perjuicio que se pueda irrogar por causa de corte de agua motivado por falta de pago u otra medida reglamentaria.",
+                    "b) El Canal asume la responsabilidad sobre cualquier perjuicio que se pueda irrogar por causa de corte de agua motivado por falta de pago u otra medida reglamentaria.",
+                    "c) El Canal declina la responsabilidad sobre cualquier perjuicio que se pueda irrogar por causa de corte de agua motivado por falta de pago u otra medida reglamentaria con la salvedad de las tomas provisionales de obra."
+                ],
+                correct: 0
+            },
+            {
+                text: "La red de distribución de Canal de Isabel II tiene una longitud, entorno a:",
+                options: [
+                    "a) 17.000 km",
+                    "b) 25.000 km",
+                    "c) 125.000 km"
+                ],
+                correct: 0
+            },
+            {
+                text: "Dentro del análisis y administración de datos en hojas de cálculo, ¿qué es un escenario?",
+                options: [
+                    "a) Es un conjunto de valores distintos que se crean y se guardan para poder ver en cualquier momento los distintos resultados y modificarlos automáticamente si está fuera del rango previamente establecido.",
+                    "b) Es un conjunto de valores distintos que se crean y se guardan para poder ver en cualquier momento y generar gráficos previamente establecidos",
+                    "c) Es un conjunto de valores distintos que se crean y se guardan para poder ver en cualquier momento los distintos resultados y sustituirlos, si procede, en la hoja de cálculo."
+                ],
+                correct: 2
+            },
+            {
+                text: "De las siguientes Estaciones de Tratamiento de Agua Potable (ETAP) del Canal de Isabel II, ¿cuál es la que tiene mayor capacidad de tratamiento de agua diario?",
+                options: [
+                    "a) Majadahonda",
+                    "b) Colmenar",
+                    "c) Valmayor"
+                ],
+                correct: 1
+            },
+            {
+                text: "Según el II Convenio Colectivo de Canal de Isabel II, S.A., los trabajadores con hijos menores de 16 años, para acompañar a éstos al médico especialista, dispondrán de un crédito de:",
+                options: [
+                    "a) 10 horas al año",
+                    "b) 12 horas al año",
+                    "c) Por el tiempo indispensable siempre y cuando las consultas estén justificadas convenientemente."
+                ],
+                correct: 1
+            },
+            {
+                text: "De acuerdo a lo establecido en el artículo 1 del Decreto 137/1985, de 20 de diciembre, por el que se aprueba el Reglamento sobre régimen económico y financiero del abastecimiento y saneamiento de agua en la Comunidad de Madrid, las funciones de tratamiento del agua para consumo humano se consideran:",
+                options: [
+                    "a) Aducción.",
+                    "b) Distribución.",
+                    "c) Depuración."
+                ],
+                correct: 0
+            },
+            {
+                text: "La logística inversa:",
+                options: [
+                    "a) Es el proceso que lleva a cabo una empresa para garantizar la disponibilidad de los productos y servicios necesarios para el desarrollo de su actividad",
+                    "b) Es la preparación de los pedidos de clientes, incluyendo el embalaje y el etiquetado",
+                    "c) Tiene como objetivo recuperar el valor de los materiales o asegurar su correcta eliminación"
+                ],
+                correct: 2
+            },
+            {
+                text: "Según el Decreto 2922/1975 de 31 de octubre en su artículo 3, ¿puede haber suministros de agua gratuitos?",
+                options: [
+                    "a) No",
+                    "b) Si",
+                    "c) En clientes particulares no, en organismos oficiales sí."
+                ],
+                correct: 0
+            },
+            {
+                text: "Una empresa adquirió y consumió durante el año 2021 4.500 € en materias primas. El valor económico del stock medio que mantuvo en el almacén fue de 900 €. ¿Cuál fue el periodo medio de almacenamiento?",
+                options: [
+                    "a) 5 días",
+                    "b) 73 días",
+                    "c) 2,40 días"
+                ],
+                correct: 1
+            },
+            {
+                text: "La comunicación con un cliente a través de una videoconferencia se considera:",
+                options: [
+                    "a) Comunicación presencial.",
+                    "b) Comunicación no presencial.",
+                    "c) Comunicación mixta presencial-no presencial."
+                ],
+                correct: 1
+            },
+            {
+                text: "¿Cuáles son las fases y el orden del proceso de atención al cliente?",
+                options: [
+                    "a) Acogida, análisis satisfacción del cliente, valoración de las necesidades del cliente y despedida.",
+                    "b) Acogida, satisfacción de las necesidades del cliente, obtención de la información y despedida.",
+                    "c) Acogida, obtención de la información, satisfacción de las necesidades del cliente y despedida."
+                ],
+                correct: 2
+            },
+            {
+                text: "El \"Plan para mejorar la eficiencia de los procesos\", se encuentra ubicado dentro de la:",
+                options: [
+                    "a) Línea Estratégica 7",
+                    "b) Línea Estratégica 8",
+                    "c) Línea Estratégica 10"
+                ],
+                correct: 2
+            },
+            {
+                text: "Según el II Convenio Colectivo de Canal de Isabel II, S.A., fumar o vapear en el centro de trabajo salvo que, existiendo un lugar habilitado para ello, se hiciera en el mismo, y siempre que no se incumpla además la normativa de seguridad del centro, se considera falta:",
+                options: [
+                    "a) Leve",
+                    "b) Grave",
+                    "c) Muy Grave"
+                ],
+                correct: 1
+            },
+            {
+                text: "Según el Il Convenio Colectivo de Canal de Isabel II, S.A., no concurrir a las sesiones de los tribunales de selección cuando haya sido designado miembro, sin causa justificada y comunicada con la debida antelación, salvo que se pruebe la imposibilidad de hacerlos, se considera falta:",
+                options: [
+                    "a) Leve",
+                    "b) Grave",
+                    "c) Muy Grave"
+                ],
+                correct: 0
+            },
+            {
+                text: "Dentro de los organismos públicos de protección al consumidor, ¿cuál es el órgano de colaboración y cooperación de la Administración General del Estado y la Administración de las comunidades autónomas en materia de consumo, cuya finalidad es garantizar la igualdad efectiva, en cuanto a derechos y obligaciones, de las personas consumidoras y usuarias, en todo el territorio nacional?",
+                options: [
+                    "a) Agencia Española de Consumo, Seguridad Alimentaria y Nutrición.",
+                    "b) Conferencia Sectorial de Consumo.",
+                    "c) Consejo de Consumidores y Usuarios."
+                ],
+                correct: 1
+            },{
+                text: "Según los métodos de trabajo de Canal de Isabel II, S.A., en el caso de producirse un incidente de tráfico, si estuviera involucrado en el mismo, se han de seguir las medidas de activación de la emergencia PAS, ¿qué significan sus siglas?",
+                options: [
+                    "a) Proteger / Actuar / Socorrer",
+                    "b) Proteger / Atender / Solicitar ayuda",
+                    "c) Proteger / Avisar / Socorrer"
+                ],
+                correct: 2
+            },
+            {
+                text: "Mediante el Modelo General de Actividad se estiman las necesidades futuras de personal en función de:",
+                options: [
+                    "a) El número de personas empleadas en la empresa",
+                    "b) Actividad económica general",
+                    "c) El volumen de producción"
+                ],
+                correct: 0
+            },
+            {
+                text: "El lead time es:",
+                options: [
+                    "a) El tiempo que tarda la empresa en la fabricación de un producto",
+                    "b) El tiempo que necesita la empresa para la devolución de las mercancías defectuosas",
+                    "c) El tiempo que transcurre entre la emisión de la orden de pedido desde producción hasta que se recibe la mercancía"
+                ],
+                correct: 2
+            },
+            {
+                text: "De acuerdo al Método de Trabajo 50 Trabajos en Oficinas de Canal de Isabel II, S.A., el umbral máximo normalizado de ruido de la zona de confort es de:",
+                options: [
+                    "a) 45 dB.",
+                    "b) 450 dB.",
+                    "c) 4.500 dB."
+                ],
+                correct: 0
+            },
+            {
+                text: "Según el II Convenio Colectivo de Canal de Isabel II, S.A., se proporcionará a cada Delegado de Prevención un crédito para la realización de trabajos específicos en materia de Prevención de Riesgos Laborales de:",
+                options: [
+                    "a) 100 horas anuales",
+                    "b) 40 horas anuales",
+                    "c) 4 horas mensuales"
+                ],
+                correct: 0
+            },
+            {
+                text: "Según el Decreto 2922/1975 de 31 de octubre, maniobrar la llave de paso colocada en el interior de la finca, ¿qué tipo de falta es?",
+                options: [
+                    "a) Leve.",
+                    "b) Grave.",
+                    "c) Muy grave."
+                ],
+                correct: 1
+            },
+            {
+                text: "El Plan Estratégico de Canal de Isabel II, S.A. afronta retos de modernización y sostenibilidad, ¿de cuántas líneas estratégicas se compone?",
+                options: [
+                    "a) 10",
+                    "b) 12",
+                    "c) 8"
+                ],
+                correct: 0
+            },
+            {
+                text: "Según el Decreto 137/1985 de 20 de diciembre en su artículo 18, ¿quién comprobará el rendimiento de la red de distribución cuando las entidades gestoras de aducción y distribución sean distintas?",
+                options: [
+                    "a) Gestora de aducción.",
+                    "b) Gestora de distribución.",
+                    "c) Indistintamente."
+                ],
+                correct: 0
+            },
+            {
+                text: "En relación a los sistemas de información y bases de datos relacionados con la atención al cliente, el software que sirve para centralizar todos los datos de un mismo cliente, llamadas, correos electrónicos, quejas, sugerencias, etc., se denomina:",
+                options: [
+                    "a) SAC",
+                    "b) CRM",
+                    "c) SAP"
+                ],
+                correct: 1
+            },
+            {
+                text: "La situación en la que todo el Activo se financia con recursos ajenos y no hay recursos propios, se conoce como:",
+                options: [
+                    "a) Desequilibrio a corto plazo",
+                    "b) Quiebra",
+                    "c) Máxima estabilidad"
+                ],
+                correct: 1
+            },
+            {
+                text: "De acuerdo a lo establecido en el artículo 48º del Reglamento para el servicio y distribución de las aguas del Canal de Isabel II (Decreto 2922/1975, de 31 de octubre), la obligación de la conservación del aparato de medida y del recinto que lo aloja:",
+                options: [
+                    "a) Es del cliente.",
+                    "b) Es de Canal de Isabel II.",
+                    "c) Es del abonado únicamente en las ubicaciones en interior de finca."
+                ],
+                correct: 0
+            },
+            {
+                text: "En la redacción de documentos profesionales escritos, indica qué expresión es correcta desde los puntos de vista gramatical y ortográfico:",
+                options: [
+                    "a) ¡A ver si esta vez conseguimos el objetivo!",
+                    "b) Tenía que a ver puesto más interés en el proceso.",
+                    "c) Dos de cada diez clientes no adquiere producto en su visita a nuestro centro de atención."
+                ],
+                correct: 0
+            },
+            {
+                text: "La aplicación óptima del sistema Just In Time (JIT) en la organización logística, debería conseguir el siguiente efecto:",
+                options: [
+                    "a) Stock de seguridad nulo",
+                    "b) Aumento de recursos destinados a subsanar errores",
+                    "c) Mínimos tiempos de entrega y largos tiempos de aprovisionamiento"
+                ],
+                correct: 0
+            },
+            {
+                text: "El dividendo a cuenta:",
+                options: [
+                    "a) Se reparte tras haber cerrado el ejercicio y conocer el beneficio",
+                    "b) Se reparte antes de haber finalizado el ejercicio, y figura en el Activo Corriente del balance",
+                    "c) Se reparte antes de haber finalizado el ejercicio, y figura en el Patrimonio Neto del balance"
+                ],
+                correct: 2
+            },
+            {
+                text: "De acuerdo a lo establecido en el artículo 11º del Reglamento para el servicio y distribución de las aguas del Canal de Isabel II (Decreto 2922/1975, de 31 de octubre), la falta de suministro en caso de avería, rotura de la red o falta de disponibilidad de agua:",
+                options: [
+                    "a) Dará lugar a indemnización, pero con un máximo valorado en 500 m3 al precio vigente del agua en cada momento.",
+                    "b) Dará lugar a indemnización, pero con un máximo valorado en 1.000 m3 al precio vigente del agua en cada momento.",
+                    "c) No dará lugar a indemnización."
+                ],
+                correct: 2
+            },
+            {
+                text: "Cuando el auditor, habiendo obtenido evidencia de auditoría suficiente y adecuada, concluya que las incorrecciones en los estados financieros son materiales y generalizadas:",
+                options: [
+                    "a) Emitirá una opinión desfavorable en su informe",
+                    "b) Emitirá una opinión con salvedades en su informe",
+                    "c) No emitirá el informe de auditoría"
+                ],
+                correct: 0
+            },
+            {
+                text: "Una empresa tiene, al inicio del ejercicio, 200 unidades de existencias valoradas a 20 € cada una. El 30 de enero compra 45 unidades a 65 € cada una. El 30 de marzo vende 210 unidades. ¿A qué precio sale la mercancía, si la empresa emplea el Precio Medio Ponderado como método de valoración?",
+                options: [
+                    "a) A 20 €",
+                    "b) A 42,50 €",
+                    "c) A 28,27 €"
+                ],
+                correct: 2
+            },
+            {
+                text: "En relación con el margen comercial:",
+                options: [
+                    "a) Aumenta si se consigue que las mercancías se repongan continuamente",
+                    "b) No se ve afectado ante variaciones en los costes de posesión",
+                    "c) No se ve afectado ante variaciones en los costes de adquisición"
+                ],
+                correct: 0
+            },
+            {
+                text: "El punto muerto o umbral de rentabilidad:",
+                options: [
+                    "a) Indica el número mínimo de unidades que la empresa necesita vender para comenzar a tener beneficios",
+                    "b) Indica el precio a partir del cual los clientes están dispuestos a comprar el producto",
+                    "c) Es el número de unidades que es necesario vender para cubrir los costes fijos"
+                ],
+                correct: 0
+            },
+            {
+                text: "Según el II Convenio Colectivo de Canal de Isabel II, S.A., la suspensión del derecho a concurrir a pruebas selectivas o concursos de ascenso por un periodo de un año es una sanción debido a:",
+                options: [
+                    "a) Falta leve",
+                    "b) Falta grave",
+                    "c) Falta muy grave"
+                ],
+                correct: 1
+            },
+            {
+                text: "Según el II Convenio Colectivo de Canal de Isabel II, S.A. en su artículo 28, en los servicios nocturnos, por razones de seguridad, deberá haber:",
+                options: [
+                    "a) Dos trabajadores de plantilla o de empresa externa.",
+                    "b) Dos trabajadores de plantilla.",
+                    "c) Tres trabajadores de plantilla."
+                ],
+                correct: 1
+            },
+            {
+                text: "En una base de datos, ¿cuál sería la definición de tabla?",
+                options: [
+                    "a) Una tabla es un conjunto de datos, ordenados por filas y columnas, que no tienen relación con un tema determinado. Cada fila constituye un campo, y cada columna, un registro.",
+                    "b) Una tabla es un conjunto de datos, ordenados por filas y columnas, que tienen relación con un tema determinado. Cada fila constituye un registro, y cada columna, un campo.",
+                    "c) Una tabla es un conjunto de datos, ordenados por filas y columnas, que tienen relación con un tema determinado. Cada fila constituye un campo, y cada columna, un registro."
+                ],
+                correct: 1
+            },
+            {
+                text: "El depósito regulador con mayor capacidad de Canal de Isabel II es:",
+                options: [
+                    "a) El Goloso.",
+                    "b) Santa Engracia.",
+                    "c) Islas Filipinas."
+                ],
+                correct: 0
+            },
+            {
+                text: "Según el Decreto 137/1985 de 20 de diciembre en su artículo 1, las entidades perceptoras son:",
+                options: [
+                    "a) aquellas encargadas de cobrar las facturas.",
+                    "b) aquellas que reciben las cantidades, exacciones reglamentarias o suplementos correspondientes a los servicios de abastecimiento de agua y saneamiento",
+                    "c) aquellas prestadoras de un servicio específico de los incluidos en el abastecimiento de agua o saneamiento."
+                ],
+                correct: 1
+            },
+            {
+                text: "El salario mínimo interprofesional es establecido anualmente por:",
+                options: [
+                    "a) El Gobierno, los sindicatos y la patronal",
+                    "b) El Ministerio de Trabajo y Economía Social",
+                    "c) El Gobierno mediante un Real Decreto"
+                ],
+                correct: 2
+            },{
+                text: "En la comunicación oral, de acuerdo a la fórmula V-V-V definida por Albert Mehrabian, el lenguaje corporal se considera:",
+                options: [
+                    "a) Elemento verbal.",
+                    "b) Elemento visual.",
+                    "c) Elemento vocal."
+                ],
+                correct: 1
+            },
+            {
+                text: "¿Qué causa tiene el contrato para la obtención de la práctica profesional?",
+                options: [
+                    "a) Sirve para adquirir práctica profesional vinculada a los estudios cursados.",
+                    "b) Sirve para adquirir cualificación profesional mientras se trabaja.",
+                    "c) Ambas son verdaderas."
+                ],
+                correct: 0
+            },
+            {
+                text: "De acuerdo a lo establecido en el artículo 26º del Reglamento para el servicio y distribución de las aguas del Canal de Isabel II (Decreto 2922/1975, de 31 de octubre), el Canal podrá contratar el suministro de tomas provisionales:",
+                options: [
+                    "a) Para los usos comercial, industrial y obra.",
+                    "b) Únicamente para obras.",
+                    "c) No se podrán realizar contrataciones de suministro para tomas provisionales."
+                ],
+                correct: 1
+            },
+            {
+                text: "Según el II Convenio Colectivo de Canal de Isabel II, S.A. en su artículo 37, ¿cuál es la definición de Grupo Profesional?",
+                options: [
+                    "a) Agrupación de aptitudes profesionales, titulaciones y contenido general de la prestación caracterizada por la identidad de factores de encuadramiento",
+                    "b) Agrupación unitaria de aptitudes profesionales, titulaciones y contenido general de la prestación caracterizada por la identidad de factores de encuadramiento",
+                    "c) Agrupación homogénea y de aptitudes profesionales, titulaciones y contenido general de la prestación caracterizada por la identidad de factores de encuadramiento"
+                ],
+                correct: 1
+            },
+            {
+                text: "De acuerdo a lo establecido en el artículo 7º del Reglamento para el servicio y distribución de las aguas del Canal de Isabel II (Decreto 2922/1975, de 31 de octubre), la presión en los puntos de suministro:",
+                options: [
+                    "a) Quedará sujeta a las variaciones técnicas de la red general de distribución.",
+                    "b) Se garantiza una presión mínima y una presión máxima, definidas por la normativa técnica vigente en cada momento.",
+                    "c) Se garantiza únicamente una presión mínima, definida por la normativa técnica vigente en cada momento."
+                ],
+                correct: 0
+            },
+            {
+                text: "En materia de prevención de riesgos laborales y según el método de trabajo 50 Trabajos en Oficinas de Canal de Isabel II, S.A., de los siguientes riesgos indicados ¿cuál NO se corresponde con uno de los principales riesgos derivados de los trabajos en oficinas en las instalaciones de Canal de Isabel II?",
+                options: [
+                    "a) Atropellos o golpes por vehículos.",
+                    "b) Explosión por fuga incontrolada.",
+                    "c) Intoxicación por inhalación de cloro."
+                ],
+                correct: 2
+            },
+            {
+                text: "¿Qué tipo de causas deberán tener las modificaciones sustanciales de las condiciones de trabajo que aplique una empresa a un trabajador?",
+                options: [
+                    "a) No precisa ninguna causa concreta",
+                    "b) Técnicas, productivas o ambientales",
+                    "c) Económicas, técnicas, organizativas o productivas"
+                ],
+                correct: 2
+            },
+            {
+                text: "De las siguientes combinaciones de teclas para establecer formatos en procesador de texto, ¿cuál se utiliza para Justificar?",
+                options: [
+                    "a) Ctrl + J",
+                    "b) Ctrl + K",
+                    "c) Ctrl + N"
+                ],
+                correct: 0
+            },
+            {
+                text: "¿Qué son los Profesiogramas?",
+                options: [
+                    "a) La representación gráfica del perfil profesional",
+                    "b) La descripción gráfica de las actitudes",
+                    "c) Un método para analizar los puestos de trabajo"
+                ],
+                correct: 0
+            },
+            {
+                text: "¿Cuál de los siguientes gastos se considera NO deducible en el Impuesto sobre Sociedades?",
+                options: [
+                    "a) Los intereses de demora",
+                    "b) Los gastos de personal",
+                    "c) Las multas"
+                ],
+                correct: 2
+            },
+            {
+                text: "Según los métodos de trabajo de Canal de Isabel II, S.A., ¿a qué plano del estrés laboral corresponden la ansiedad y la depresión?",
+                options: [
+                    "a) Plano emocional",
+                    "b) Plano cognitivo",
+                    "c) Plano psicológico"
+                ],
+                correct: 0
+            },
+            {
+                text: "De acuerdo a lo establecido en el artículo 1 del Decreto 137/1985, de 20 de diciembre, por el que se aprueba el Reglamento sobre régimen económico y financiero del abastecimiento y saneamiento de agua en la Comunidad de Madrid, el sobreprecio establecido en función del agua consumida o canon estimado a partir del consumo y carga contaminante, destinado a financiar las obras de infraestructura, explotación y actuaciones medioambientales relacionadas con la calidad del agua, se denomina:",
+                options: [
+                    "a) Cuota suplementaria.",
+                    "b) Cuota de red.",
+                    "c) Canon ambiental."
+                ],
+                correct: 0
+            },
+            {
+                text: "Indicar a qué tipo de comunicación dentro de la empresa corresponde la siguiente definición: \"Es un documento escrito que tiene carácter de nota o recado, se usa principalmente para transmitir órdenes o realizar solicitudes a los empleados\":",
+                options: [
+                    "a) Aviso",
+                    "b) Memorándum",
+                    "c) Informe"
+                ],
+                correct: 1
+            },
+            {
+                text: "¿Qué características tiene el contrato fijo-discontinuo?",
+                options: [
+                    "a) Los tiempos de trabajo son inciertos en cuanto a su comienzo y duración",
+                    "b) Se utiliza para cubrir una baja laboral de un trabajador indefinido fijo",
+                    "c) Cubre una necesidad de trabajo de forma intermitente o cíclica"
+                ],
+                correct: 2
+            },
+            {
+                text: "La conciliación de la vida familiar y laboral es un aspecto de la Responsabilidad Social Corporativa que se engloba en:",
+                options: [
+                    "a) Políticas Medioambientales de la Empresa",
+                    "b) Políticas de Recursos Humanos de la Empresa",
+                    "c) Políticas Éticas de la Empresa"
+                ],
+                correct: 1
+            },
+            {
+                text: "¿En qué consiste la técnica del mystery shopper en el ámbito de la evaluación de la satisfacción del cliente?",
+                options: [
+                    "a) Se realizan estudios de mercado para medir la satisfacción de los clientes.",
+                    "b) Se evalúa la satisfacción con el servicio ofrecido a través de encuestas.",
+                    "c) Se evalúan las características del servicio ofrecido a clientes ficticios."
+                ],
+                correct: 2
+            },
+            {
+                text: "Según el II Convenio Colectivo de Canal de Isabel II, S.A., los trabajadores podrán solicitar excedencia para atender al cuidado de cada hijo por un periodo no superior a 3 años. ¿Qué tipo de excedencia tendremos que solicitar?",
+                options: [
+                    "a) Voluntaria",
+                    "b) Forzosa",
+                    "c) Especial"
+                ],
+                correct: 2
+            },
+            {
+                text: "De acuerdo a lo establecido en el artículo 94º del Reglamento para el servicio y distribución de las aguas del Canal de Isabel II (Decreto 2922/1975, de 31 de octubre), las infracciones graves se sancionarán con la facturación de un recargo equivalente al importe de hasta los siguientes m3 valorados a la tarifa general:",
+                options: [
+                    "a) 1.000.",
+                    "b) 5.000.",
+                    "c) 2.000."
+                ],
+                correct: 0
+            },
+            {
+                text: "El Decreto 2922/1975 de 31 de octubre en su artículo 41 indica lo siguiente: \"En las acometidas ya existentes, cualquier modificación solicitada por el abonado se realizará por el Canal, de acuerdo con sus normas y con cargo al solicitante. Si las modificaciones a realizar supusiesen alteración en las condiciones del suministro contratado, se procederá previamente a la formalización de un nuevo contrato. Cualquier actuación sobre la acometida por parte de la propiedad o usuarios que no se atenga a lo anterior, tendrá la consideración de fraudulenta, procediéndose de acuerdo con lo previsto en los artículos:",
+                options: [
+                    "a) 11 y 26 de este Reglamento\"",
+                    "b) 15 y 23 de este Reglamento\"",
+                    "c) 12 y 25 de este Reglamento\""
+                ],
+                correct: 1
+            },
+            {
+                text: "Una persona trabajadora extingue su contrato, sin que exista una causa que lo justifique, informando por escrito con 15 días de antelación. Le corresponde:",
+                options: [
+                    "a) Finiquito + prestación por desempleo",
+                    "b) Únicamente finiquito",
+                    "c) Únicamente prestación por desempleo"
+                ],
+                correct: 1
+            },
+            {
+                text: "Según el Il Convenio Colectivo de Canal de Isabel II, S.A., la falta de asistencia al trabajo sin causa justificada durante 2 ó 3 días al mes, a no ser que se pruebe la imposibilidad de hacerlo por causa de fuerza mayor, está considerada falta:",
+                options: [
+                    "a) Leve",
+                    "b) Grave",
+                    "c) Muy grave"
+                ],
+                correct: 1
+            },
+            {
+                text: "Todas las personas trabajadoras están incluidas en uno de los grupos de cotización que establece la Seguridad Social. ¿Cuántos grupos de cotización existen?",
+                options: [
+                    "a) 11",
+                    "b) 9",
+                    "c) 13"
+                ],
+                correct: 0
+            },
+            {
+                text: "Uno de los 10 compromisos que conforman la Misión de Canal de Isabel II, S.A. es:",
+                options: [
+                    "a) Impulsar la calidad ambiental y la eficiencia energética",
+                    "b) Extender y fomentar el uso de agua regenerada",
+                    "c) Fortalecer la transformación digital para una gestión más cercana y eficaz"
+                ],
+                correct: 2
+            },
+            {
+                text: "De acuerdo a lo establecido en el artículo 45º del Reglamento para el servicio y distribución de las aguas del Canal de Isabel II (Decreto 2922/1975, de 31 de octubre), los gastos de condena de acometida en caso de suspensión del contrato a petición del cliente serán por cuenta de:",
+                options: [
+                    "a) Canal.",
+                    "b) Abonado.",
+                    "c) Abonado sólo en los casos en los que exista deuda en el contrato."
+                ],
+                correct: 1
+            },
+            {
+                text: "El Canal de Isabel II, en el año 1967 pone en funcionamiento su primera Estación de Tratamiento de Agua Potable (ETAP), ¿cuál era?",
+                options: [
+                    "a) Valmayor",
+                    "b) Colmenar",
+                    "c) Torrelaguna"
+                ],
+                correct: 2
+            },{
+                text: "Cuando un trabajador cesa en la prestación de sus servicios, la empresa debe cursar la baja en la Seguridad Social en un plazo máximo de:",
+                options: [
+                    "a) 15 días naturales",
+                    "b) 3 días naturales",
+                    "c) 5 días naturales"
+                ],
+                correct: 1
+            },
+            {
+                text: "De acuerdo a lo establecido en el artículo 51 del Reglamento para el servicio y distribución de las aguas del Canal de Isabel II (Decreto 2922/1975, de 31 de octubre), la facturación del consumo por estimación:",
+                options: [
+                    "a) Considerará los 3 periodos análogos precedentes.",
+                    "b) Considerará los 2 periodos análogos precedentes.",
+                    "c) Considerará todos los periodos análogos precedentes existentes en el contrato."
+                ],
+                correct: 1
+            },
+            {
+                text: "¿Cuáles de éstas son fases por las que pasa el agua en las estaciones potabilizadoras?",
+                options: [
+                    "a) Preoxidación y neutralización",
+                    "b) Pretratamiento y tratamiento primario",
+                    "c) Desinfección y regeneración"
+                ],
+                correct: 0
+            },
+            {
+                text: "Según el Decreto 3068/1975 de 31 de octubre en su artículo 10, ¿qué es la cuota de servicio?",
+                options: [
+                    "a) Una cantidad variable, abonable periódicamente en concepto de disponibilidad del servicio y en función del diámetro de la acometida",
+                    "b) Una cantidad fija, abonable periódicamente y en la contratación inicial en concepto de disponibilidad del servicio y con independencia de los volúmenes de agua suministrados",
+                    "c) Una cantidad fija, abonable periódicamente en concepto de disponibilidad del servicio y con independencia de los volúmenes de agua suministrados"
+                ],
+                correct: 2
+            },
+            {
+                text: "¿Cuál es el orden de los procesos del ciclo integral del agua?",
+                options: [
+                    "a) Captación - Tratamiento - Distribución - Saneamiento",
+                    "b) Captación - Saneamiento - Tratamiento - Distribución",
+                    "c) Saneamiento - Distribución - Tratamiento - Saneamiento"
+                ],
+                correct: 0
+            },
+            {
+                text: "En la comunicación oral presencial con un cliente, una distancia con éste de 2 metros se puede definir como:",
+                options: [
+                    "a) Espacio íntimo.",
+                    "b) Espacio social-consultivo.",
+                    "c) Espacio público."
+                ],
+                correct: 1
+            },
+            {
+                text: "Según el Decreto 137/1985 de 20 de diciembre en su artículo 16, en aquellos municipios en los que el servicio de aducción es prestado por Canal de Isabel II conjuntamente con otras entidades, ¿dónde termina la responsabilidad en lo que respecta a la calidad del servicio?",
+                options: [
+                    "a) Punto de entrega.",
+                    "b) Contador.",
+                    "c) Entrada del término municipal."
+                ],
+                correct: 0
+            },
+            {
+                text: "De acuerdo a lo establecido en el artículo 4 del Decreto 137/1985, de 20 de diciembre, por el que se aprueba el Reglamento sobre régimen económico y financiero del abastecimiento y saneamiento de agua en la Comunidad de Madrid, la aprobación de las tarifas aplicables por el Canal de Isabel II corresponde a:",
+                options: [
+                    "a) Comunidad de Madrid.",
+                    "b) Ayuntamientos.",
+                    "c) Confederación Hidrográfica del Tajo."
+                ],
+                correct: 0
+            },
+            {
+                text: "Para evitar roturas de stock:",
+                options: [
+                    "a) Se debe contar con un stock de seguridad",
+                    "b) Se aplica el método de las medias móviles",
+                    "c) Hay que disminuir los costes del pedido"
+                ],
+                correct: 0
+            },
+            {
+                text: "¿Puede renunciar un trabajador a los derechos reconocidos en un convenio colectivo?",
+                options: [
+                    "a) No, por el principio de irrenunciabilidad de derechos",
+                    "b) Sí, siempre, porque son derechos personales",
+                    "c) Sí, si lo acuerdan Trabajador y Empresa"
+                ],
+                correct: 0
+            }
+        ]
+    },
+    exam2: {
+        title: "Prueba Teórico-Práctica (G01682022-G01702022)",
+        questions: [
+            {
+                text: "En los contratos de trabajo, ¿cuándo se puede dar por finalizado el periodo de prueba?",
+                options: [
+                    "a) Ambas partes pueden darlo por finalizado en cualquier momento sin necesidad de preaviso y no se tiene derecho a percibir indemnización",
+                    "b) El trabajador puede darlo por finalizado en cualquier momento sin necesidad de preaviso y no se tiene derecho a percibir indemnización, el empresario tiene que avisar con 48 horas y abonar la indemnización",
+                    "c) Ambas partes pueden darlo por finalizado en cualquier momento sin necesidad de preaviso y se tiene derecho a percibir indemnización correspondiente"
+                ],
+                correct: 0
+            },
+            {
+                text: "Según la gestión logística y comercial, el método electrónico que asigna un código de identificación a un producto y usa ese código para identificar o acceder a información adicional sobre el stock, se conoce por las siglas:",
+                options: [
+                    "a) ERC",
+                    "b) RFID",
+                    "c) EDI"
+                ],
+                correct: 1
+            },
+            {
+                text: "Según el II Convenio Colectivo de Canal de Isabel II S.A., en caso de traslado del domicilio habitual, el permiso será de:",
+                options: [
+                    "a) Un día",
+                    "b) Dos días",
+                    "c) Tres días"
+                ],
+                correct: 1
+            },
+            {
+                text: "Según el II Convenio Colectivo de Canal de Isabel II S.A., si el trabajador se encuentra en la situación de activo durante todo el periodo entre el uno de julio al treinta de junio, el permiso de asuntos propios será de:",
+                options: [
+                    "a) Tres días",
+                    "b) Cinco días",
+                    "c) Siete días"
+                ],
+                correct: 2
+            },
+            {
+                text: "Para que un contrato de trabajo produzca efectos jurídicos se requiere la concurrencia de tres requisitos esenciales, ¿cuáles son?",
+                options: [
+                    "a) Acuerdo, Retribución y Causa",
+                    "b) Consentimiento, Objeto y Causa",
+                    "c) Retribución, Duración y Firmas"
+                ],
+                correct: 1
+            },{
+                text: "De conformidad con el artículo 18 del Decreto 137/1985, por el que se aprueba el Reglamento sobre el régimen económico financiero del abastecimiento y saneamiento de agua en la Comunidad de Madrid, en los casos en los que la gestora de aducción y distribución sean distintas, ¿quién comprobará el rendimiento de la red de distribución?",
+                options: [
+                    "a) La entidad gestora de aducción",
+                    "b) La entidad gestora de distribución",
+                    "c) Ambas, estando obligadas a realizarlo al menos una vez al mes"
+                ],
+                correct: 0
+            },
+            {
+                text: "La parte de los capitales permanentes (Pasivo no corriente y Patrimonio Neto) que financian el Activo corriente, se denomina:",
+                options: [
+                    "a) Garantía o distancia a la quiebra",
+                    "b) Solvencia técnica",
+                    "c) Fondo de maniobra o de rotación"
+                ],
+                correct: 2
+            },
+            {
+                text: "De conformidad con el artículo 5 del Decreto 2922/1975 (Reglamento para el Servicio y distribución de las aguas de Canal de Isabel II), Canal garantiza la potabilidad del agua, procedente de su red de distribución:",
+                options: [
+                    "a) En toda la red interior del cliente",
+                    "b) En el punto de entrega del suministro",
+                    "c) En toda la red interior del cliente, a excepción de las zonas comunes, en los casos de Comunidades de Propietarios"
+                ],
+                correct: 1
+            },
+            {
+                text: "Según el II Convenio Colectivo de Canal de Isabel II S.A., encontrarse bajo la influencia de sustancias estupefacientes o de bebidas alcohólicas fuera de las horas de trabajo, vistiendo el uniforme de la empresa, es una falta:",
+                options: [
+                    "a) Leve",
+                    "b) Grave",
+                    "c) Muy grave"
+                ],
+                correct: 1
+            },
+            {
+                text: "Según la gestión logística y comercial, la diferencia que existe entre los ingresos que se obtienen en la comercialización de un producto y el coste total de las mercancías, se denomina:",
+                options: [
+                    "a) Margen comercial",
+                    "b) Rotación de stock",
+                    "c) Stock óptimo"
+                ],
+                correct: 0
+            },
+            {
+                text: "De conformidad con el artículo 51 del Decreto 2922/1975 (Reglamento para el Servicio y distribución de las aguas de Canal de Isabel II), la facturación del consumo se realizará por los procedimientos siguientes:",
+                options: [
+                    "a) Por diferencia de lecturas, por evaluación de consumos y por cálculos exponenciales",
+                    "b) Por diferencia de lecturas, por estimación de consumos y por evaluación de consumos",
+                    "c) Por estimación de consumos, por evaluación de consumos y por trigonometría de consumos"
+                ],
+                correct: 1
+            },
+            {
+                text: "Una empresa recibe un anticipo de un cliente por 700 €, más 21% de IVA, a cuenta de suministros futuros. Pasados 15 días, vende mercaderías a crédito a dicho cliente por 5.000 €. IVA del 21%. Los importes correspondientes al IVA se contabilizan en cuentas del grupo 47. ¿Cuál será el saldo de la cuenta (430) Clientes, al final de la operación?",
+                options: [
+                    "a) 4.300 €",
+                    "b) 5.350 €",
+                    "c) 5.203 €"
+                ],
+                correct: 2
+            },
+            {
+                text: "Según la gestión logística y comercial, la factura simplificada podrá emitirse a elección del emisor, cuando el importe de los bienes o servicios que se van a facturar no excedan de:",
+                options: [
+                    "a) 600 euros IVA incluido",
+                    "b) 400 euros IVA incluido",
+                    "c) 300 euros IVA incluido"
+                ],
+                correct: 1
+            },
+            {
+                text: "¿Cómo se clasifican las competencias en los perfiles profesionales?",
+                options: [
+                    "a) Genéricas, específicas y transversales",
+                    "b) Genéricas, especiales y horizontales",
+                    "c) Genéricas, especiales y verticales"
+                ],
+                correct: 0
+            },
+            {
+                text: "Si una empresa ha satisfecho, a lo largo del ejercicio, pagos fraccionados por importe superior al impuesto corriente del ejercicio:",
+                options: [
+                    "a) Tendrá que reconocer un ingreso en la contabilización del impuesto sobre Sociedades por la diferencia",
+                    "b) Tendrá que reconocer un pasivo en la contabilización del impuesto sobre Sociedades por la diferencia",
+                    "c) Tendrá que reconocer un activo en la contabilización del impuesto sobre Sociedades por la diferencia"
+                ],
+                correct: 2
+            },
+            {
+                text: "El contrato para la sustitución de persona trabajadora, cuando se extinga, ¿da derecho a algún tipo de indemnización?",
+                options: [
+                    "a) No",
+                    "b) Si",
+                    "c) No, salvo si el trabajador ya previamente había tenido contrato de formación"
+                ],
+                correct: 0
+            },
+            {
+                text: "¿Cuál de los siguientes enunciados sería la definición correcta de contrato de trabajo?",
+                options: [
+                    "a) Es el acuerdo entre la empresa y la persona trabajadora en el que ambas manifiestan su voluntad de iniciar una relación laboral y las condiciones en que ésta se desarrollará",
+                    "b) Es el documento acordado entre ambas partes una vez finalizado el periodo de prueba, en el que se establecen el salario y la duración de la relación laboral",
+                    "c) Es el documento de la empresa en el que manifiesta su voluntad de iniciar una relación laboral y las condiciones para el trabajador"
+                ],
+                correct: 0
+            },
+            {
+                text: "Según el Ciclo Integral del Agua de Canal de Isabel II S.A., ¿qué son las grandes conducciones?",
+                options: [
+                    "a) Son las tuberías de más de 300mm encargadas de llevar suministro a municipios de más de 250.000 habitantes",
+                    "b) Son el elemento de aducción para enviar el agua a los distintos depósitos municipales. Enlazadas a modo de anillo",
+                    "c) Son el elemento fundamental para garantizar la óptima distribución de agua. Enlazadas a modo de anillo, conectan los grandes canales que proceden de los ríos Lozoya y Jarama con los que llegan a los ríos Guadarrama y Alberche"
+                ],
+                correct: 2
+            },
+            {
+                text: "Según el II Convenio Colectivo de Canal de Isabel II S.A., los trabajadores que tengan hijos con discapacidad, que requieran una atención especializada, dispondrán de:",
+                options: [
+                    "a) 1 hora de flexibilidad horaria diaria",
+                    "b) 2 horas de flexibilidad horaria diaria",
+                    "c) 3 horas de flexibilidad horaria semanal"
+                ],
+                correct: 1
+            },
+            {
+                text: "¿Cuál es la definición correcta de APTITUD?",
+                options: [
+                    "a) Es la capacidad que tiene un colectivo para realizar una tarea todavía no aprendida, pero que pueden llegar a aprender",
+                    "b) Es la capacidad o habilidad potencial que tiene una persona para realizar una tarea todavía no aprendida, pero que se puede llegar a aprender",
+                    "c) Es la capacidad o habilidad potencial que tiene una persona para realizar una tarea aprendida"
+                ],
+                correct: 1
+            },
+            {
+                text: "Según la gestión logística y comercial, la normativa de calidad que rigen los procesos de almacenaje es:",
+                options: [
+                    "a) ISO 9000",
+                    "b) ISO 14000",
+                    "c) ISO 45000"
+                ],
+                correct: 0
+            },
+            {
+                text: "De conformidad con el artículo 61 del Decreto 2922/1975 (Reglamento para el Servicio y distribución de las aguas de Canal de Isabel II), cuando el volumen de agua consumido y no abonado NO pueda determinarse, se supondrá igual al máximo que haya podido pasar por la acometida en el periodo considerado, a razón de:",
+                options: [
+                    "a) 6 horas de consumo diarias",
+                    "b) 8 horas de consumo diarias",
+                    "c) 8 horas de consumo semanales"
+                ],
+                correct: 1
+            },
+            {
+                text: "Según el artículo 5 de la Orden 130/2018, por la que se aprueban las tarifas de los servicios de aducción, distribución, alcantarillado, depuración y reutilización prestados por Canal de Isabel II S.A., las bonificaciones por familia numerosa y vivienda numerosa:",
+                options: [
+                    "a) Serán de aplicación a la vivienda habitual y además a otro domicilio no habitual",
+                    "b) Sólo serán de aplicación a la vivienda habitual y serán acumulables entre sí para la misma vivienda",
+                    "c) Sólo serán de aplicación a la vivienda habitual y NO serán acumulables entre sí para la misma vivienda"
+                ],
+                correct: 2
+            },
+            {
+                text: "Según el II Convenio Colectivo de Canal de Isabel II S.A., ¿cuáles son las fases de un expediente disciplinario?",
+                options: [
+                    "a) Fase de incoación, Fase de desarrollo y Fase de conclusión",
+                    "b) Fase de incoación, Fase de desarrollo, Fase de conclusión y Fase de impugnación",
+                    "c) Fase de establecimiento, Fase de desarrollo y Fase sancionadora"
+                ],
+                correct: 0
+            },
+            {
+                text: "De conformidad con el artículo 21 del Decreto 2922/1975 (Reglamento para el Servicio y distribución de las aguas de Canal de Isabel II), el contratante del suministro será:",
+                options: [
+                    "a) El titular o titulares de la finca, industria o local a abastecer o quien los represente",
+                    "b) Únicamente las Comunidades de Propietarios, debidamente constituidas",
+                    "c) Únicamente el presidente de la Comunidad de Propietarios"
+                ],
+                correct: 0
+            },{
+                text: "En un traslado con movilidad geográfica si el trabajador opta por rescindir su contrato, ¿Cuál sería la indemnización a percibir por el trabajador?",
+                options: [
+                    "a) 33 días de salario por año de servicio, prorrateándose por meses los periodos inferiores al año y con un máximo de 12 mensualidades",
+                    "b) 20 días de salario por año de servicio, prorrateándose por meses los periodos inferiores al año y con un máximo de 24 mensualidades",
+                    "c) 20 días de salario por año de servicio, prorrateándose por meses los periodos inferiores al año y con un máximo de 12 mensualidades"
+                ],
+                correct: 2
+            },
+            {
+                text: "Según la gestión logística y comercial, las empresas confiables con un alto grado de capacidad para el suministro de bienes y servicios, y que están en situación de obtener certificaciones de calidad a corto plazo, según el sistema de gestión de calidad de la empresa, son:",
+                options: [
+                    "a) Proveedores de grado I",
+                    "b) Proveedores de grado II",
+                    "c) Proveedores de grado III"
+                ],
+                correct: 1
+            },
+            {
+                text: "¿Qué dos elementos entorpecen la comunicación?",
+                options: [
+                    "a) El ruido y la redundancia",
+                    "b) El ruido y el feedback",
+                    "c) La redundancia y la descodificación"
+                ],
+                correct: 0
+            },
+            {
+                text: "De conformidad con el artículo 39 del Decreto 2922/1975 (Reglamento para el Servicio y distribución de las aguas de Canal de Isabel II), ¿dónde se instalará el aparato de medida?",
+                options: [
+                    "a) El aparato de medida se instalará siempre en el sótano del edificio",
+                    "b) El aparato de medida se instalará, dentro del portal de la vivienda o local a abastecer",
+                    "c) El aparato de medida se instalará en el límite de la propiedad con la vía pública"
+                ],
+                correct: 2
+            },
+            {
+                text: "¿Cuál sería la indemnización para el trabajador en una extinción de contrato por CAUSAS OBJETIVAS?",
+                options: [
+                    "a) 33 días de salario por año de servicio, prorrateándose por meses los periodos de tiempo inferiores al año. Tendrá un tope de 12 mensualidades",
+                    "b) 20 días de salario por año de servicio, prorrateándose por meses los periodos de tiempo inferiores al año. Tendrá un tope de 12 mensualidades",
+                    "c) 45 días de salario por año de servicio, prorrateándose por meses los periodos de tiempo inferiores al año. Tendrá un tope de 24 mensualidades"
+                ],
+                correct: 1
+            },
+            {
+                text: "Según la gestión logística y comercial, los almacenes donde se centraliza gran cantidad de mercancía para ser distribuida a puntos de destino son:",
+                options: [
+                    "a) Almacenes de tránsito",
+                    "b) Almacenes regionales",
+                    "c) Plataformas logísticas"
+                ],
+                correct: 2
+            },
+            {
+                text: "¿De cuántos días dispone la empresa para comunicar cualquier variación en los datos que aportaron a la Tesorería Territorial de la Seguridad Social?",
+                options: [
+                    "a) 3 días naturales",
+                    "b) 10 días hábiles",
+                    "c) 10 días naturales"
+                ],
+                correct: 0
+            },
+            {
+                text: "Según la gestión logística y comercial, la energía eléctrica es para la mayoría de las empresas, un coste:",
+                options: [
+                    "a) Variable e indirecto",
+                    "b) Fijo e indirecto",
+                    "c) Variable y directo"
+                ],
+                correct: 1
+            },
+            {
+                text: "¿Cuáles son las fases del proceso de atención al cliente?",
+                options: [
+                    "a) Acogida, obtención de la información, postventa del producto y despedida",
+                    "b) Acogida, postventa del producto, marketing, satisfacción de las necesidades del cliente y despedida",
+                    "c) Acogida, obtención de la información, satisfacción de las necesidades del cliente y despedida"
+                ],
+                correct: 2
+            },
+            {
+                text: "Según el Il Convenio Colectivo de Canal de Isabel II S.A., el Comité de Seguridad y Salud estará compuesto por:",
+                options: [
+                    "a) Catorce miembros, siete de los cuales serán designados por la Dirección y siete por el Comité de Empresa de entre sus miembros",
+                    "b) Seis miembros, tres de los cuales serán designados por la Dirección y tres por el Comité de Empresa de entre sus miembros",
+                    "c) Once miembros, seis de los cuales serán designados por la Dirección y cinco por el Comité de Empresa de entre sus miembros"
+                ],
+                correct: 0
+            },
+            {
+                text: "De conformidad con el artículo 18 del Reglamento (UE) 2016/679, el interesado tendrá derecho a obtener del responsable del tratamiento la limitación del tratamiento de los datos cuando:",
+                options: [
+                    "a) En los casos en los que la empresa acceda",
+                    "b) Nunca",
+                    "c) El tratamiento sea ilícito y el interesado se oponga a la supresión de los datos personales y solicite en su lugar la limitación de su uso"
+                ],
+                correct: 2
+            },
+            {
+                text: "¿Cuál de las siguientes definiciones es la correcta de RESPONSABILIDAD SOCIAL CORPORATIVA?",
+                options: [
+                    "a) Normas y principios bajo los cuales se rigen las actividades que desempeña una empresa y que se utilizan para resolver los diversos problemas morales o éticos que pueden surgir en su entorno",
+                    "b) Es la forma de hacer negocios que incluya las actuaciones voluntarias de la empresa para abordar los efectos sociales, ambientales y económicos de la acción empresarial, integrando en ella el respeto por los valores éticos",
+                    "c) Normas bajo las cuales se rigen las actividades que desempeña una empresa y que se utilizan para resolver los diversos problemas morales, sociales y éticos que pueden surgir en sus relaciones empresariales"
+                ],
+                correct: 1
+            },
+            {
+                text: "Los rendimientos del capital inmobiliario, en el IRPF:",
+                options: [
+                    "a) Forman parte de la renta del ahorro",
+                    "b) Forman parte de la renta general",
+                    "c) No se consideran renta"
+                ],
+                correct: 1
+            },
+            {
+                text: "La Base Imponible del Impuesto sobre Sociedades:",
+                options: [
+                    "a) Es el Resultado contable menos las bonificaciones y las deducciones",
+                    "b) Es el Resultado contable +/- los ajustes de carácter fiscal y menos las deducciones para evitar la doble imposición internacional",
+                    "c) Es el Resultado contable +/- los ajustes de carácter fiscal y menos las compensaciones de bases imponibles negativas de ejercicios anteriores"
+                ],
+                correct: 2
+            },
+            {
+                text: "De conformidad con el artículo tercero del Decreto 3068/1975, de 31 de octubre, para regular las relaciones económicas abonado-Canal de Isabel II, la valoración de la cuota de enganche se obtendrá considerando todos los elementos que la componen y la longitud total de tubería necesaria, con un mínimo, en todo caso de:",
+                options: [
+                    "a) 4 metros",
+                    "b) 5 metros",
+                    "c) 6 metros"
+                ],
+                correct: 2
+            },
+            {
+                text: "Selecciona la opción correcta:",
+                options: [
+                    "a) ¡A ver si esta vez lo conseguimos!",
+                    "b) ¡Haber si esta vez lo conseguimos!",
+                    "c) ¡Ha ver si esta vez lo conseguimos!"
+                ],
+                correct: 0
+            },
+            {
+                text: "Según el Il Convenio Colectivo de Canal de Isabel II S.A., no comunicar con la antelación debida (24 horas) la falta al trabajo por motivos justificados, salvo que se compruebe la imposibilidad de hacerlo, se considera una falta:",
+                options: [
+                    "a) Falta leve",
+                    "b) Falta grave",
+                    "c) Falta muy grave"
+                ],
+                correct: 0
+            },
+            {
+                text: "Según la gestión logística y comercial, clasificamos los almacenes según los sistemas de manipulación de las mercancías en:",
+                options: [
+                    "a) Almacenes leasing y alquilados",
+                    "b) Almacenes tradicionales e inteligentes",
+                    "c) Almacenes de subproducto y de recambio"
+                ],
+                correct: 1
+            },
+            {
+                text: "Según la gestión logística y comercial, ¿a qué se denomina factura proforma?",
+                options: [
+                    "a) Es aquella que incluye en una sola factura distintas operaciones realizadas en distintas fechas",
+                    "b) Factura para subsanar errores en la factura ordinaria",
+                    "c) Documento en el que se detalla una oferta comercial"
+                ],
+                correct: 2
+            },
+            {
+                text: "Las cuentas de compras:",
+                options: [
+                    "a) Presentarán saldo acreedor. Al final del ejercicio su saldo se abonará con cargo a la cuenta 129 \"Resultado del ejercicio\"",
+                    "b) Presentarán saldo deudor. Al final del ejercicio su saldo se abonará con cargo a la cuenta 129 \"Resultado del ejercicio\"",
+                    "c) Presentarán saldo deudor. Al final del ejercicio su saldo se cargará con abono a la cuenta 129 \"Resultado del ejercicio\""
+                ],
+                correct: 1
+            },
+            {
+                text: "De conformidad con el artículo diez del Decreto 3068/1975, de 31 de octubre, para regular las relaciones económicas abonado-Canal de Isabel II, la cuota por servicio:",
+                options: [
+                    "a) Es una cantidad fija, abonable periódicamente, en concepto de disponibilidad del servicio y con independencia de los volúmenes de agua suministrados",
+                    "b) Es una cantidad variable, abonable periódicamente, en concepto disponibilidad del servicio y dependiente de los volúmenes de agua suministrados",
+                    "c) Es una cantidad variable, abonable periódicamente, en concepto de las obras ejecutadas y dependiente de los volúmenes de agua suministrados"
+                ],
+                correct: 0
+            },
+            {
+                text: "Según la gestión logística y comercial, los beneficios que genera el aprovisionamiento pueden ser:",
+                options: [
+                    "a) Económicos, industriales y técnicos",
+                    "b) Industriales y técnicos",
+                    "c) Técnicos, económicos y beneficios en las relaciones"
+                ],
+                correct: 2
+            },
+            {
+                text: "Según el II Convenio Colectivo de Canal de Isabel II S.A., la incoación del expediente disciplinario deberá ser ordenada por:",
+                options: [
+                    "a) Dirección de Empresa y Comité de Empresa",
+                    "b) Comité de Empresa",
+                    "c) Dirección de Empresa"
+                ],
+                correct: 2
+            },
+            {
+                text: "De conformidad con el artículo 2 del Decreto 29/2018, de 17 de abril, del Consejo de Gobierno, por el que se aprueban las tarifas máximas de los servicios de aducción, distribución, alcantarillado y depuración y reutilización del agua de la Comunidad de Madrid, ¿qué es un contador divisionario principal?",
+                options: [
+                    "a) Es un contador instalado entre la red de distribución de Canal de Isabel II S.A., y la red de distribución de titularidad privada, red de la cual derivan los contadores secundarios, no agrupados en batería, que son gestionados por Canal de Isabel II S.A.",
+                    "b) Es un contador instalado en la acometida que conecta una batería de contadores con la red de distribución y controla el consumo total de la finca, batería cuyos contadores son gestionados por Canal de Isabel II S.A.",
+                    "c) Es un contador instalado en una acometida derivada de una red de distribución privada, contador que es gestionado por Canal de Isabel II S.A., y que se encuentra asociado a un contador colectivo principal"
+                ],
+                correct: 1
+            },
+            {
+                text: "Según el Real Decreto 485/1997 de 14 de abril, sobre disposiciones mínimas en materia de señalización de seguridad y salud en el trabajo, la señalización dirigida a alertar a los trabajadores de la aparición de una situación de peligro o evacuar zona de riesgo, se realizará mediante:",
+                options: [
+                    "a) Señal luminosa, acústica o una comunicación verbal",
+                    "b) Señal de color rojo o señal en forma de panel",
+                    "c) Señales gestuales"
+                ],
+                correct: 0
+            },{
+                text: "De conformidad con el artículo 23 del Decreto 2922/1975 (Reglamento para el Servicio y distribución de las aguas de Canal de Isabel II), ¿cuál es el plazo establecido para la formalización de un nuevo contrato de suministro por cambio de titularidad de la finca o local abastecido?",
+                options: [
+                    "a) 1 mes",
+                    "b) 2 meses",
+                    "c) 15 días"
+                ],
+                correct: 0
+            },
+            {
+                text: "Según el II Convenio Colectivo de Canal de Isabel II S.A., ¿cuál es el crédito del que dispone cada delegado de prevención para la realización de trabajos específicos en materia de Prevención de Riesgos Laborales?",
+                options: [
+                    "a) 100 horas anuales",
+                    "b) 100 horas mensuales",
+                    "c) 10 horas semanales"
+                ],
+                correct: 0
+            },
+            {
+                text: "En una operación de Arrendamiento Financiero, según el Plan General de Contabilidad:",
+                options: [
+                    "a) El arrendatario registrará, en el momento inicial, un activo de acuerdo con su naturaleza",
+                    "b) El arrendatario registrará, en el momento inicial, el IVA total de dicha operación",
+                    "c) El arrendatario registrará las cuotas satisfechas como gastos del ejercicio"
+                ],
+                correct: 0
+            },
+            {
+                text: "Según el Ciclo Integral del Agua en la Comunidad de Madrid, dentro de los procesos que se siguen en una EDAR (Estación Depuradora de Agua Residual), ¿cuáles son los principales procesos seguidos en la línea de fangos?",
+                options: [
+                    "a) Pretratamiento, tratamiento primario, tratamiento secundario y tratamiento terciario",
+                    "b) Espesamiento, estabilización, acondicionamiento y deshidratación",
+                    "c) Preoxidación, coagulación y floculación, decantación, filtración, neutralización y desinfección final"
+                ],
+                correct: 1
+            },
+            {
+                text: "Según el Ciclo Integral del Agua en la Comunidad de Madrid, dentro del proceso de saneamiento de las aguas, mediante el tratamiento primario:",
+                options: [
+                    "a) Se eliminan los cuerpos voluminosos que llegan desde los colectores",
+                    "b) Se reducen sólidos en suspensión, además de una cierta reducción de la demanda bioquímica de oxígeno",
+                    "c) Se utiliza el agua para riego de parques y baldeo de calles"
+                ],
+                correct: 1
+            },
+            {
+                text: "Según la gestión logística y comercial, del análisis del concepto de logística y de sus funciones, se deduce que su objetivo general es:",
+                options: [
+                    "a) Mediante un proceso eficiente garantizar la disponibilidad de los productos y servicios",
+                    "b) Responder a las necesidades de la distribución, interna y externa con eficacia",
+                    "c) Prevenir las necesidades de aprovisionamiento"
+                ],
+                correct: 1
+            },
+            {
+                text: "Según el Real Decreto 486/1997 de 14 de abril por el que se establecen las disposiciones mínimas de seguridad y salud en los lugares de trabajo, la temperatura de los locales donde se realicen trabajos ligeros, estará comprendida:",
+                options: [
+                    "a) Entre 13 y 24 grados",
+                    "b) Entre 14 y 25 grados",
+                    "c) Entre 14 y 26 grados"
+                ],
+                correct: 1
+            },
+            {
+                text: "Según la gestión logística y comercial, ¿a qué se denomina tiempo de reaprovisionamiento?",
+                options: [
+                    "a) El tiempo que transcurre entre dos entradas consecutivas de mercancías en el almacén",
+                    "b) Número de veces que es preciso reponer un artículo en el almacén durante un determinado periodo de tiempo",
+                    "c) La cantidad media que sale del almacén según el número de días que dura el periodo"
+                ],
+                correct: 0
+            },
+            {
+                text: "De conformidad con el artículo 95 del Decreto 2922/1975 (Reglamento para el Servicio y distribución de las aguas de Canal de Isabel II), serán consideradas infracciones muy graves:",
+                options: [
+                    "a) Los que modifiquen o amplien los usos a los que se destine el agua",
+                    "b) Los que impidan o dificulten las lecturas de los contadores",
+                    "c) Los que establezcan injertos que tengan como consecuencia el uso incontrolado o fraudulento del agua"
+                ],
+                correct: 2
+            },
+            {
+                text: "Para la aplicación de la legislación laboral y sus distintas normas existen 5 principios, ¿cuáles son?",
+                options: [
+                    "a) Principio de jerarquía normativa, de norma mínima, de norma más favorable, de irrenunciabilidad de derechos y de condición más beneficiosa.",
+                    "b) Principio de jerarquía normativa, de norma mínima, de acción social, de irrenunciabilidad de derechos y de condición más beneficiosa.",
+                    "c) Principio de jerarquía normativa, de norma mínima, de norma más favorable, no discriminación y de libre contratación."
+                ],
+                correct: 0
+            },
+            {
+                text: "Según el Ciclo Integral del Agua en la Comunidad de Madrid, ¿cuáles de estos son procesos por las que pasa el agua en las estaciones de tratamiento de agua potable (ETAP)?",
+                options: [
+                    "a) Preoxidación y filtración",
+                    "b) Pretratamiento y tratamiento primario",
+                    "c) Desinfección y regeneración"
+                ],
+                correct: 0
+            },
+            {
+                text: "La misión de Canal de Isabel II:",
+                options: [
+                    "a) Es asegurar el bienestar y progreso de las personas de la Comunidad de Madrid prestando un servicio público en la gestión sostenible del agua. Garantizando con orgullo y compromiso el derecho universal",
+                    "b) Es proporcionar agua a nuestra Comunidad, ayudando a nuestros clientes a abordar sus desafíos ambientales y de sostenibilidad en materia de energía, agua y residuos",
+                    "c) Está basada en un importante e ineludible objetivo: el cuidado de un recurso natural escaso. Cuidamos nuestra Comunidad gestionando el agua de todos con transparencia, eficiencia y sostenibilidad"
+                ],
+                correct: 2
+            },
+            {
+                text: "De conformidad con el artículo 1 del Decreto 137/1985, por el que se aprueba el Reglamento sobre el régimen económico financiero del abastecimiento y saneamiento de agua en la Comunidad de Madrid, el abastecimiento de agua es un servicio público que incluye:",
+                options: [
+                    "a) Reparto por tuberías y distribución",
+                    "b) Recogida de aguas residuales y distribución",
+                    "c) Aducción y distribución"
+                ],
+                correct: 2
+            },
+            {
+                text: "Según establece el II Convenio Colectivo de Canal de Isabel II S.A., constituye una falta grave:",
+                options: [
+                    "a) El consumo fraudulento de agua o complicidad con el mismo",
+                    "b) La disminución continuada y voluntaria en el rendimiento normal del trabajo",
+                    "c) La no recuperación reiterada de la jornada por aplicación de la flexibilidad horaria"
+                ],
+                correct: 2
+            },
+            {
+                text: "Uno de los COMPROMISOS que conforman el cuerpo total de la misión de Canal de Isabel II S.A. es:",
+                options: [
+                    "a) \"Potenciar la transparencia, el buen gobierno y el compromiso con la sociedad\"",
+                    "b) \"Garantizar la calidad del agua de consumo\"",
+                    "c) \"Liderar los retos del sector y los avances normativos\""
+                ],
+                correct: 2
+            },
+            {
+                text: "Según el II Convenio Colectivo de Canal de Isabel II S.A, ¿cuánto has debido trabajar para poder disfrutar del puente anual?",
+                options: [
+                    "a) Al menos 3 meses en el año natural de su disfrute",
+                    "b) Mínimo 45 días hábiles",
+                    "c) Al menos 6 meses en el año natural de su disfrute o el último trimestre del año previo"
+                ],
+                correct: 0
+            },
+            {
+                text: "Según el II Convenio Colectivo de Canal de Isabel II S.A., ¿hasta cuántos días de asuntos propios podrán disfrutarse por fracciones de horas completas?",
+                options: [
+                    "a) Hasta dos días",
+                    "b) Hasta cinco días",
+                    "c) No podrán disfrutarse por fracciones de horas completas"
+                ],
+                correct: 0
+            },
+            {
+                text: "Son deducibles del Impuesto sobre Sociedades:",
+                options: [
+                    "a) Las pérdidas contabilizadas por deterioro de créditos de deudores si han transcurrido al menos seis meses desde el vencimiento de la obligación",
+                    "b) Las pérdidas contabilizadas por deterioro del inmovilizado material, inversiones inmobiliarias e inmovilizado intangible",
+                    "c) Las retribuciones de los fondos propios"
+                ],
+                correct: 0
+            },
+            {
+                text: "¿Cuál es el periodo de prueba para un contrato para la formación en alternancia?",
+                options: [
+                    "a) 1 mes",
+                    "b) 6 meses",
+                    "c) No podrá establecerse periodo de prueba"
+                ],
+                correct: 2
+            },
+            {
+                text: "¿Cuáles son los pasos básicos que hay que seguir para hacer correctamente el proceso de archivo?",
+                options: [
+                    "a) Revisar, clasificar, referenciar, fotocopiar y archivar",
+                    "b) Revisar, clasificar, referenciar, prearchivar y archivar",
+                    "c) Revisar, clasificar, anexar, referenciar y archivar"
+                ],
+                correct: 1
+            },
+            {
+                text: "Una empresa ha realizado, durante el ejercicio, ventas por 500.000 € y compras por 364.000 €. Además, presenta gastos en el ejercicio por amortización del inmovilizado por 15.000 € e Ingresos financieros por 4.000 €. ¿Cuál es su Resultado de explotación del ejercicio?",
+                options: [
+                    "a) 136.000 €",
+                    "b) 125.000 €",
+                    "c) 121.000 €"
+                ],
+                correct: 2
+            },
+            {
+                text: "Según el Ciclo Integral del Agua de Canal de Isabel II, ¿cuáles son los embalses de la cuenca del Lozoya?",
+                options: [
+                    "a) Pinilla, Riosequillo, Puentes Viejas, El Villar y El Atazar",
+                    "b) El Vado, Pinilla, Riosequillo, Puentes Viejas, El Villar y El Atazar",
+                    "c) Pedrezuela, Manzanares, Puentes Viejas, El Villar y El Atazar"
+                ],
+                correct: 0
+            },
+            {
+                text: "Según el II Convenio Colectivo de Canal de Isabel II S.A., los malos tratos de palabra u obra con los trabajadores de la empresa y público, es una falta:",
+                options: [
+                    "a) Leve",
+                    "b) Grave",
+                    "c) Muy grave"
+                ],
+                correct: 2
+            },
+            {
+                text: "En el cálculo de los rendimientos del trabajo del IRPF:",
+                options: [
+                    "a) Dentro del cálculo del rendimiento integro, los rendimientos dinerarios se computarán por el importe bruto",
+                    "b) No se incluyen las remuneraciones de gastos de representación",
+                    "c) No se incluyen las prestaciones por desempleo"
+                ],
+                correct: 0
+            },
+            {
+                text: "La cuenta \"Ingresos por arrendamientos\":",
+                options: [
+                    "a) Presentará saldo acreedor",
+                    "b) Nace por el Debe",
+                    "c) Al final del ejercicio su saldo se abonará con cargo a la cuenta 129 \"Resultado del ejercicio\""
+                ],
+                correct: 0
+            },{
+                text: "Según la gestión logística y comercial, el descuento comercial, ¿sobre qué importe se aplica?",
+                options: [
+                    "a) Importe neto",
+                    "b) Importe bruto",
+                    "c) No se aplica"
+                ],
+                correct: 1
+            },
+            {
+                text: "Una empresa vende al contado una instalación técnica por 55.000 €. Su precio de adquisición fue de 60.000 €. Si en el momento de la venta su amortización acumulada es de 12.000 € y tiene registrada una pérdida por deterioro de valor por 2.000 €, en el asiento de la venta:",
+                options: [
+                    "a) Reconocerá una pérdida procedente del Inmovilizado Material por 5.000 €",
+                    "b) Reconocerá un beneficio procedente del Inmovilizado Material por 9.000 €",
+                    "c) Reconocerá un beneficio procedente del Inmovilizado Material por 7.000 €"
+                ],
+                correct: 1
+            },
+            {
+                text: "El Impuesto sobre Sociedades:",
+                options: [
+                    "a) Se devengará el último día del periodo impositivo",
+                    "b) Su periodo impositivo puede exceder de 12 meses",
+                    "c) Es un impuesto indirecto"
+                ],
+                correct: 0
+            },
+            {
+                text: "Una empresa ha obtenido un resultado contable de 180.000 € en el año 2022. Tiene una base imponible negativa del ejercicio 2021 de 15.000 €. Además, tiene deducciones por creación de empleo para trabajadores con discapacidad por 4.000 € y ha realizado pagos fraccionados durante el año 2022 por 16.000 €. ¿Cuál será su cuota a ingresar en el Impuesto sobre Sociedades de 2022? Tipo impositivo: 25%",
+                options: [
+                    "a) 41.250 €",
+                    "b) 21.250 €",
+                    "c) 25.000 €"
+                ],
+                correct: 1
+            },
+            {
+                text: "Según el Plan General de Contabilidad, las Aplicaciones Informáticas:",
+                options: [
+                    "a) Forman parte del Inmovilizado Material",
+                    "b) Forman parte de las Existencias",
+                    "c) Forman parte del Inmovilizado Intangible"
+                ],
+                correct: 2
+            },
+            {
+                text: "¿Cuál de las siguientes afirmaciones es la correcta?",
+                options: [
+                    "a) La afiliación en el sistema de la Seguridad Social es voluntaria para el personal incluido en el campo de aplicación de la Seguridad Social y es única para toda la vida de los trabajadores.",
+                    "b) La afiliación en el sistema de la Seguridad Social es obligatoria para todo el personal incluido en el campo de aplicación de la Seguridad Social y varía en función de las altas, bajas y demás variaciones que puedan producirse.",
+                    "c) La afiliación en el sistema de la Seguridad Social es obligatoria para todo el personal incluido en el campo de aplicación de la Seguridad Social y es única para toda la vida de los trabajadores."
+                ],
+                correct: 2
+            },
+            {
+                text: "Según el Real Decreto 486/1997 de 14 de abril por el que se establecen las disposiciones mínimas de seguridad y salud en los lugares de trabajo, en los locales de primeros auxilios, se dispondrá como mínimo de:",
+                options: [
+                    "a) Un botiquín, un desfibrilador y una camilla",
+                    "b) Un botiquín, una camilla y una fuente de agua potable",
+                    "c) Una silla de ruedas, un botiquín y un desfibrilador"
+                ],
+                correct: 1
+            },
+            {
+                text: "Según la gestión logística y comercial, la cantidad de activo necesario para atender las necesidades normales del proceso productivo, se denomina:",
+                options: [
+                    "a) Stock de anticipación",
+                    "b) Stock activo",
+                    "c) Stock medio"
+                ],
+                correct: 1
+            },
+            {
+                text: "Según el Ciclo Integral del Agua en la Comunidad de Madrid, ¿cuál de los siguientes NO es un uso del agua regenerada?",
+                options: [
+                    "a) Riego de parques y jardines",
+                    "b) Recarga de acuíferos",
+                    "c) Consumo para ganadería"
+                ],
+                correct: 2
+            },
+            {
+                text: "El punto muerto o umbral de rentabilidad:",
+                options: [
+                    "a) Es el precio mínimo al que una empresa debe vender para no incurrir en pérdidas",
+                    "b) Es la diferencia entre el Activo corriente y el Pasivo corriente",
+                    "c) Es el número mínimo de unidades que una empresa necesita vender para cubrir los costes totales"
+                ],
+                correct: 2
+            },
+            {
+                text: "Según la gestión logística y comercial, para analizar el mantenimiento de stocks, ¿qué modelo se aplica?",
+                options: [
+                    "a) Modelo Nelson",
+                    "b) Modelo Rotativo",
+                    "c) Modelo Wilson"
+                ],
+                correct: 2
+            },
+            {
+                text: "Si en un contrato de trabajo existe una cláusula nula:",
+                options: [
+                    "a) El contrato automáticamente queda extinguido debiendo abonar el empresario una indemnización de 20 días por año trabajado, con un máximo de 12 mensualidades",
+                    "b) El contrato seguirá vigente y la cláusula nula quedará sin efecto",
+                    "c) El contrato automáticamente queda extinguido, debiendo abonar el empresario una indemnización de 33 días por año trabajado con un máximo de 24 mensualidades"
+                ],
+                correct: 1
+            },
+            {
+                text: "Según la gestión logística y comercial, si una empresa decidiera externalizar sus tareas logísticas a través de operadores logísticos, según su función, ¿cuáles serían los operadores de segundo nivel (2PL)?",
+                options: [
+                    "a) Son aquellos que proporcionan sólo transporte de mercancías a las empresas",
+                    "b) Operadores de logística integral",
+                    "c) Aquellos que se ocupan del transporte y del almacenamiento de la mercancía"
+                ],
+                correct: 2
+            },
+            {
+                text: "Una empresa ha cobrado, el día 1 de noviembre de 2022, el arrendamiento correspondiente a noviembre y diciembre de 2022 y el de enero de 2023 de un local, en total 12.000 € (4.000 € al mes). Lo ha registrado con abono a la cuenta 752 Ingresos por arrendamientos. Al cierre del ejercicio 2022:",
+                options: [
+                    "a) Registrará un abono en la cuenta 485 Ingresos anticipados por 4.000 euros",
+                    "b) Registrará un abono en la cuenta 485 Ingresos anticipados por 8.000 euros",
+                    "c) No registrará ningún ajuste por no ser necesario"
+                ],
+                correct: 0
+            },
+            {
+                text: "Según el II Convenio Colectivo de Canal de Isabel II S.A., no concurrir a las sesiones de los tribunales de selección cuando se haya sido designado miembro, sin causa justificada y comunicada con la debida antelación, salvo que se pruebe la imposibilidad de hacerlo, es una falta:",
+                options: [
+                    "a) Leve",
+                    "b) Grave",
+                    "c) Muy grave"
+                ],
+                correct: 0
+            },
+            {
+                text: "Según la gestión logística y comercial, ¿a qué se denomina estrategia proactiva?",
+                options: [
+                    "a) Solucionar los problemas cuando ya han sucedido",
+                    "b) Prevenir problemas antes de tener que solucionarlos",
+                    "c) Solucionar los problemas según vayan surgiendo"
+                ],
+                correct: 1
+            },
+            {
+                text: "De conformidad con el artículo 1 del Decreto 137/1985, por el que se aprueba el Reglamento sobre el régimen económico financiero del abastecimiento y saneamiento de agua en la Comunidad de Madrid, la cuota suplementaria estará destinada a:",
+                options: [
+                    "a) Financiar las obras de infraestructura, explotación y actuaciones medioambientales relacionadas con la calidad del agua",
+                    "b) Financiar las obras de recogida de aguas residuales y su evacuación a los distintos puntos de vertido",
+                    "c) Será de libre disposición y Canal podrá invertirla en lo que en ese momento se requiera"
+                ],
+                correct: 0
+            },
+            {
+                text: "De conformidad con el artículo 10 de la Ley 17/1984. de 20 de diciembre, reguladora del abastecimiento y saneamiento de agua en la Comunidad de Madrid, todos los contratos que celebre Canal de Isabel II para la instalación, reparación, o conservación de los servicios de abastecimiento de agua y saneamiento y sus relaciones con los usuarios estarán sometidos al derecho:",
+                options: [
+                    "a) Público",
+                    "b) Privado",
+                    "c) Mixto"
+                ],
+                correct: 1
+            },
+            {
+                text: "¿En qué consiste el arbitraje de consumo?",
+                options: [
+                    "a) Es un órgano de encuentro de representantes de diversas Administraciones Públicas para contribuir a hacer eficaz el principio de colaboración administrativa",
+                    "b) Es un proceso voluntario y gratuito de resolución de conflictos. La voluntariedad debe ser por ambas partes, es decir, el empresario debe aceptar este mecanismo de solución",
+                    "c) Es un proceso gratuito de resolución de conflictos al que el empresario está obligado a participar"
+                ],
+                correct: 1
+            },
+            {
+                text: "Según el II Convenio Colectivo de Canal de Isabel II S.A., la siguiente falta, ¿qué clasificación tiene ?: \"Ocultar intencionadamente al servicio médico de la empresa enfermedades que puedan suponer un peligro para el trabajador o sus compañeros\":",
+                options: [
+                    "a) Falta leve",
+                    "b) Falta grave",
+                    "c) Falta muy grave"
+                ],
+                correct: 1
+            },
+            {
+                text: "De conformidad con el artículo 38 del Decreto 2922/1975 (Reglamento para el Servicio y distribución de las aguas de Canal de Isabel II), cuando el suministro solicitado lo sea para una vivienda o bloque de viviendas que constituyan una sola finca:",
+                options: [
+                    "a) Se concederá una única acometida para el uso domiciliario",
+                    "b) Se concederán tantas acometidas como determine el Delegado del Gobierno",
+                    "c) Se concederán tantas acometidas como solicite el cliente, debiendo abonar los gastos de ejecución previamente"
+                ],
+                correct: 0
+            },
+            {
+                text: "¿Qué es un perfil profesiográfico?",
+                options: [
+                    "a) Documento posterior a la entrevista en el que se recogen los aspectos cualitativos y cuantitativos deseables en el candidato al puesto de trabajo",
+                    "b) Documento previo a la entrevista en el que se recogen los aspectos cualitativos y cuantitativos menos deseables en el candidato al puesto de trabajo",
+                    "c) Documento previo a la entrevista en el que se recogen los aspectos cualitativos y cuantitativos deseables en el candidato al puesto de trabajo"
+                ],
+                correct: 2
+            },
+            {
+                text: "Según establece el II Convenio Colectivo de Canal de Isabel II S.A., en los servicios nocturnos, por seguridad:",
+                options: [
+                    "a) Habrá 2 trabajadores de plantilla",
+                    "b) Habrá 3 trabajadores de plantilla",
+                    "c) Habrá 4 trabajadores de plantilla"
+                ],
+                correct: 0
+            },
+            {
+                text: "De conformidad con el artículo 5 del Decreto 29/2018, de 17 de abril, del Consejo de Gobierno, por el que se aprueban las tarifas máximas de los servicios de aducción, distribución, alcantarillado y depuración y reutilización del agua de la Comunidad de Madrid, para determinar el valor del parámetro N en el cálculo de bloques de consumo, se deberá considerar:",
+                options: [
+                    "a) En los suministros destinados a usos domésticos, se tendrá en cuenta únicamente el número total de viviendas abastecidas a través del contador instalado en dicho suministro, quedando excluidos el resto",
+                    "b) En los suministros destinados a usos domésticos, se tendrá en cuenta el número total de viviendas y usos comunes abastecidos a través del contador instalado en dicho suministro, quedando excluidos los locales",
+                    "c) En los suministros destinados a usos domésticos, se tendrá en cuenta el número total de viviendas, locales y usos comunes abastecidos a través del contador instalado en dicho suministro"
+                ],
+                correct: 2
+            },
+            {
+                text: "Según la gestión logística y comercial, la posibilidad de conocer en cada momento el origen y destino de una operación a través de su documentación, se denomina:",
+                options: [
+                    "a) Trazabilidad del producto",
+                    "b) Trazabilidad de la documentación",
+                    "c) Trazabilidad de la operación de compraventa"
+                ],
+                correct: 1
+            },
+            {
+                text: "El \"Estado de ingresos y gastos reconocidos\":",
+                options: [
+                    "a) Forma parte del \"Estado de cambios en el Patrimonio Neto\"",
+                    "b) Forma parte del \"Estado de flujos de Efectivo\"",
+                    "c) Forma parte de la \"Cuenta de Pérdidas y Ganancias\""
+                ],
+                correct: 0
+            },
+            {
+                text: "Según la gestión logística y comercial, el coste de espacio es:",
+                options: [
+                    "a) El derivado de disponer de un lugar dedicado a la conservación de mercancías",
+                    "b) La suma de todas las inversiones realizadas en maquinaria y elementos empleados en almacén",
+                    "c) El coste que está integrado por todos los recursos empleados, tanto materiales como humanos, para colocar, mover y mantener las mercancías en almacén"
+                ],
+                correct: 0
+            },
+            {
+                text: "En una ampliación de capital mediante compensación de deudas, con Prima de Emisión:",
+                options: [
+                    "a) Se cargarán las cuentas de Deudas y Prima de Emisión, y se abonará la cuenta de Capital",
+                    "b) Se cargarán las cuentas de Capital y Prima de Emisión, y se abonará la cuenta de Deudas",
+                    "c) Se abonarán las cuentas de Capital y Prima de Emisión, y se cargará la cuenta de Deudas"
+                ],
+                correct: 2
+            },
+            {
+                text: "De conformidad con el artículo tercero del Decreto 3068/1975, de 31 de octubre, para regular las relaciones económicas abonado-Canal de Isabel II, la cuota de enganche:",
+                options: [
+                    "a) Corresponde al coste de la instalación de la acometida",
+                    "b) Es una cantidad fija en concepto de disponibilidad del servicio y con independencia de los volúmenes de agua suministrados",
+                    "c) Corresponde al importe de las obras de adaptación de la red existente y su prolongación"
+                ],
+                correct: 0
+            },
+            {
+                text: "Según la Orden 1330/2018 por la que se aprueban las tarifas de los servicios de aducción, distribución, alcantarillado, depuración y reutilización prestados por Canal de Isabel II S.A., la bonificación por vivienda numerosa se aplicará:",
+                options: [
+                    "a) Por un periodo de dos años desde su concesión",
+                    "b) Por un periodo de un año desde su concesión",
+                    "c) Por un periodo de 6 meses desde su concesión"
+                ],
+                correct: 0
+            },
+            {
+                text: "De los ámbitos de aplicación de los convenios colectivos, la siguiente definición ¿a cuál se refiere? \"Define el territorio en el que se aplica el convenio (Estatal, autonómico, provincial, etc..)\"",
+                options: [
+                    "a) Ámbito personal",
+                    "b) Ámbito funcional",
+                    "c) Ámbito geográfico"
+                ],
+                correct: 2
+            },
+            {
+                text: "Según el artículo 18 del II Convenio Colectivo de Canal de Isabel II S.A., el tiempo máximo que se pueden realizar funciones de grupo inferior NO podrá exceder de:",
+                options: [
+                    "a) 30 días",
+                    "b) 15 días",
+                    "c) 25 días"
+                ],
+                correct: 1
+            },
+            {
+                text: "Una empresa está fabricando una máquina con sus propios medios. Para ello, durante el primer año, ha pagado los siguientes gastos: 25.000 € por sueldos y salarios y 12.000 € por los materiales. La fabricación de la máquina no ha concluido al final del ejercicio. Por tanto, en el cierre del ejercicio:",
+                options: [
+                    "a) Habrá reconocido un ingreso por Trabajos realizados para el Inmovilizado Material en curso por 37.000 €",
+                    "b) Habrá reconocido un incremento en el Inmovilizado Material en curso por 12.000 €",
+                    "c) Habrá reconocido un incremento en el Inmovilizado Material en curso por 25.000 €"
+                ],
+                correct: 0
+            },
+            {
+                text: "¿Cuáles son los principios básicos del sistema de la Seguridad Social?",
+                options: [
+                    "a) Universalidad, Solidaridad intergeneracional, Independencia autonómica y Unidad de caja",
+                    "b) Universalidad, Solidaridad intergeneracional, Equidad e igualdad de derechos y porcentaje autonómico de mejoras",
+                    "c) Universalidad, Solidaridad intergeneracional, Equidad e igualdad de derechos y Unidad de caja"
+                ],
+                correct: 2
+            },
+            {
+                text: "Según establece el II Convenio Colectivo de Canal de Isabel II S.A., la incorrección con los superiores jerárquicos, compañeros y público en general:",
+                options: [
+                    "a) Constituye una falta leve",
+                    "b) Constituye una falta grave",
+                    "c) Constituye una falta muy grave"
+                ],
+                correct: 0
+            }
+        ]
+    }
+};
+
+const container = document.getElementById('quiz-container');
+const titleElement = document.getElementById('exam-title');
+
+function loadExam(examKey) {
+    container.innerHTML = ''; 
+    const exam = data[examKey];
+    titleElement.textContent = exam.title;
+
+    exam.questions.forEach((q, qIndex) => {
+        const block = document.createElement('div');
+        block.className = 'question-block';
+        
+        let html = `<div class="question-text">${qIndex + 1}. ${q.text}</div>`;
+        html += `<div id="options_${qIndex}">`;
+        
+        q.options.forEach((opt, optIndex) => {
+            html += `
+                <label class="option" id="label_${qIndex}_${optIndex}">
+                    <input type="radio" name="q${qIndex}" value="${optIndex}" 
+                    onclick="checkAnswer(${qIndex}, ${optIndex}, ${q.correct}, '${examKey}')">
+                    ${opt}
+                </label>
+            `;
+        });
+        
+        html += `</div><div id="feedback_${qIndex}" class="feedback"></div>`;
+        block.innerHTML = html;
+        container.appendChild(block);
+    });
+}
+
+function checkAnswer(qIndex, selectedIndex, correctIndex, examKey) {
+    const optionsDiv = document.getElementById(`options_${qIndex}`);
+    const feedbackDiv = document.getElementById(`feedback_${qIndex}`);
+    const inputs = optionsDiv.querySelectorAll('input');
+    const examData = data[examKey];
+
+    inputs.forEach(input => input.disabled = true);
+
+    if (selectedIndex === correctIndex) {
+        feedbackDiv.textContent = "¡Respuesta Correcta!";
+        feedbackDiv.className = "feedback correct";
+    } else {
+        feedbackDiv.textContent = "Respuesta Incorrecta.";
+        feedbackDiv.className = "feedback incorrect";
+        
+        const correctLabel = document.getElementById(`label_${qIndex}_${correctIndex}`);
+        correctLabel.classList.add("highlight-correct");
+    }
+}
+</script>
+
+</body>
+</html>

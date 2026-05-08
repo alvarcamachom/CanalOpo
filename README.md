@@ -13,8 +13,6 @@ El repositorio se divide principalmente en:
 
 Todo el material compatible (archivos HTML y PDF) se puede visualizar online a través de GitHub Pages sin necesidad de descargarlo:
 
-[Acceso web a CanalOpo](https://alvarcamachom.github.io/CanalOpo/)
-
 ### Enlaces directos de ejemplo
 *   **Exámenes:** [Ir al test](https://alvarcamachom.github.io/CanalOpo/Material_Estudio/examenes_problemas/examenes.html)
-*   **Legislación:** [Ir al resumen](https://alvarcamachom.github.io/CanalOpo/Material_Estudio/resumen_legislacion.pdf)
+*   **Legislación:** [Ir al resumen]Pendiente

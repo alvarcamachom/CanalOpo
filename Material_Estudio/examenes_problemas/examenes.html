@@ -69,6 +69,34 @@
         padding: 2px 5px;
         border-radius: 3px;
     }
+    .results-container {
+    margin-top: 30px;
+    padding: 20px;
+    border: 2px solid #0056b3;
+    border-radius: 5px;
+    background-color: #f8f9fa;
+    text-align: center;
+    display: none;
+}
+.results-container p {
+    font-size: 18px;
+    margin: 5px 0;
+}
+.score {
+    font-size: 24px;
+    font-weight: bold;
+    color: #0056b3;
+    margin-top: 15px !important;
+}
+.finish-btn {
+    display: block;
+    margin: 20px auto;
+    background-color: #28a745;
+    border-color: #218838;
+}
+.finish-btn:hover {
+    background-color: #218838;
+}
 </style>
 </head>
 <body>
@@ -2070,11 +2098,17 @@ const data = {
 
 const container = document.getElementById('quiz-container');
 const titleElement = document.getElementById('exam-title');
+let examState = { total: 0, correct: 0, wrong: 0, answered: 0 };
 
 function loadExam(examKey) {
     container.innerHTML = ''; 
     const exam = data[examKey];
     titleElement.textContent = exam.title;
+
+    examState.total = exam.questions.length;
+    examState.correct = 0;
+    examState.wrong = 0;
+    examState.answered = 0;
 
     exam.questions.forEach((q, qIndex) => {
         const block = document.createElement('div');
@@ -2097,26 +2131,63 @@ function loadExam(examKey) {
         block.innerHTML = html;
         container.appendChild(block);
     });
+
+    const finishBtn = document.createElement('button');
+    finishBtn.textContent = 'Finalizar Examen';
+    finishBtn.className = 'finish-btn';
+    finishBtn.onclick = calculateResults;
+    container.appendChild(finishBtn);
+
+    const resultsDiv = document.createElement('div');
+    resultsDiv.id = 'exam-results';
+    resultsDiv.className = 'results-container';
+    container.appendChild(resultsDiv);
 }
 
 function checkAnswer(qIndex, selectedIndex, correctIndex, examKey) {
     const optionsDiv = document.getElementById(`options_${qIndex}`);
     const feedbackDiv = document.getElementById(`feedback_${qIndex}`);
     const inputs = optionsDiv.querySelectorAll('input');
-    const examData = data[examKey];
 
     inputs.forEach(input => input.disabled = true);
+    examState.answered++;
 
     if (selectedIndex === correctIndex) {
         feedbackDiv.textContent = "¡Respuesta Correcta!";
         feedbackDiv.className = "feedback correct";
+        examState.correct++;
     } else {
         feedbackDiv.textContent = "Respuesta Incorrecta.";
         feedbackDiv.className = "feedback incorrect";
+        examState.wrong++;
         
         const correctLabel = document.getElementById(`label_${qIndex}_${correctIndex}`);
         correctLabel.classList.add("highlight-correct");
     }
+}
+
+function calculateResults() {
+    const unanswered = examState.total - examState.answered;
+    const score = examState.correct - (examState.wrong / 3);
+
+    const resultsDiv = document.getElementById('exam-results');
+    resultsDiv.style.display = 'block';
+    resultsDiv.innerHTML = `
+        <h2>Resultados Finales</h2>
+        <p>Total de preguntas: <strong>${examState.total}</strong></p>
+        <p>Respuestas correctas: <strong style="color: #155724;">${examState.correct}</strong></p>
+        <p>Respuestas incorrectas: <strong style="color: #721c24;">${examState.wrong}</strong></p>
+        <p>Preguntas sin responder: <strong>${unanswered}</strong></p>
+        <p class="score">Puntuación Final: ${score.toFixed(2)}</p>
+    `;
+
+    const allInputs = document.querySelectorAll('.question-block input[type="radio"]');
+    allInputs.forEach(input => input.disabled = true);
+
+    const finishBtn = document.querySelector('.finish-btn');
+    if(finishBtn) finishBtn.style.display = 'none';
+    
+    window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
 }
 </script>
 

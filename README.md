@@ -15,4 +15,4 @@ Todo el material compatible (archivos HTML y PDF) se puede visualizar online a t
 
 ### Enlaces directos de ejemplo
 *   **Exámenes:** [Ir al test](https://alvarcamachom.github.io/CanalOpo/Material_Estudio/examenes_problemas/examenes.html)
-*   **Legislación:** [Ir al resumen]Pendiente
+*   **Legislación:** [Ir al resumen](https://alvarcamachom.github.io/CanalOpo/Material_Estudio/resumen_completo.pdf)
